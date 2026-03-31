@@ -1,0 +1,25 @@
+# Juego: Zoo Tycoon (Prototype)
+## Pitch
+Un tycoon de zoológico donde el jugador diseña, construye y expande su parque para atraer visitantes. Comprar y posicionar animales y mejoras (hábitats, decoraciones, servicios) aumenta el interés del público y los ingresos, pero cada animal tiene una personalidad que afecta la convivencia: pueden aparecer conflictos con animales del mismo hábitat o de hábitats vecinos. Si la tensión escala, ocurren peleas que dañan el hábitat y bajan la afluencia de gente, obligando al jugador a intervenir: reorganizar recintos, gestionar compatibilidades y reparar daños para recuperar reputación y rentabilidad.
+
+## Ficha Rápida (GDD)
+- **Fantasía del jugador:** Gerente/arquitecto de un zoológico "vivo".
+- **Objetivo principal:** Aumentar visitantes e ingresos manteniendo hábitats estables y animales compatibles.
+- **Loop principal:**
+    1. Ganar dinero por visitantes.
+    2. Comprar/colocar animales y construir/mejorar hábitats + servicios.
+    3. Observar compatibilidades (personalidades, hábitat y vecinos).
+    4. Resolver conflictos (reubicar, separar, mejorar entorno, reparar daños).
+    5. Recuperar reputación/afluencia y reinvertir para expandir.
+- **Conflicto clave:** La expansión atrae público pero eleva el riesgo de fricción entre animales.
+- **Consecuencias:** Peleas -> daño del hábitat + caída de visitantes/ingresos (hasta que se repara).
+- **Construcción de Hábitats (Grid):** El jugador dibuja los recintos dinámicamente en una cuadrícula. A mayor tamaño: más costo, mayor capacidad de animales, pero también mayor riesgo de estrés y conflictos internos.
+- **Progresión:** Desbloqueo gradual de animales, recintos, mejoras y herramientas de control.
+
+## Reglas de Código
+- **Estricto Inglés:** Nomenclatura pura en inglés (Variables, Clases, Funciones).
+- **Cero Comentarios:** No escribir comentarios (`//`) ni documentaciones XML (`///`) en el código fuente generado. El código debe ser limpio y autoexplicativo por defecto.
+
+## División del Trabajo (Acuerdo)
+* Gemini (IA): Se encarga del código "tedioso" y boilerplate (estructuras de datos, conectividad de UI, sistemas de persistencia/tiempo).
+* Gabriel (Desarrollador): Se encarga del "core" y el "game feel" (interacción física, construcción, sensaciones e integraciones finales).
