@@ -7,12 +7,21 @@ namespace ZooTycoon.Core
         public static GameManager Instance { get; private set; }
 
         public bool isBuildMode { get; private set; }
+
         public event System.Action OnModeChanged;
 
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
+        }
+        void Update()
+        {
+            if (isBuildMode)
+            {
+                var moveInput = InputManager.Instance.actions.Player.Move.ReadValue<Vector2>().normalized;
+                CameraManager.Instance.MoveCamera(moveInput);
+            }
         }
 
         public void ToggleBuildMode()

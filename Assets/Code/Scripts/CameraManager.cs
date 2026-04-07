@@ -4,30 +4,16 @@ using Unity.Cinemachine;
 public class CameraManager : MonoBehaviour
 {
     public CinemachineCamera[] cameras;
-    private void OnEnable()
+    public static CameraManager Instance { get; private set; }
+    public float moveSpeed = 10f;
+    private void Awake()
     {
-        if (ZooTycoon.Core.GameManager.Instance != null)
-        {
-            ZooTycoon.Core.GameManager.Instance.OnModeChanged += OnModeChanged;
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
-    private void OnDisable()
+    public void MoveCamera(Vector2 moveInput)
     {
-        if (ZooTycoon.Core.GameManager.Instance != null)
-        {
-            ZooTycoon.Core.GameManager.Instance.OnModeChanged -= OnModeChanged;
-        }
-    }
-    private void OnModeChanged()
-    {
-        if (ZooTycoon.Core.GameManager.Instance.isBuildMode)
-        {
-            ChangeCamera(0);
-        }
-        else
-        {
-            ChangeCamera(1);
-        }
+        transform.position += new Vector3(moveInput.x, 0, moveInput.y) * Time.deltaTime * moveSpeed;
     }
     public void ChangeCamera(int index)
     {

@@ -71,14 +71,20 @@ public class GridCreator : MonoBehaviour
             gridDictionary[gridPosition].SetOccupied(isOccupied);
         }
     }
+
+    public Vector3 GetCellWorldPosition(Vector2 gridPosition)
+    {
+        return new Vector3(gridPosition.x * cellSize + cellSize / 2f, 0, gridPosition.y * cellSize + cellSize / 2f);
+    }
+
     void OnDrawGizmos()
     {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                Vector3 position = new Vector3(x * cellSize + cellSize / 2f, 0, y * cellSize + cellSize / 2f);
-                
+                Vector3 position = GetCellWorldPosition(new Vector2(x, y));
+
                 if (Application.isPlaying && IsGridOccupied(new Vector2(x, y)))
                 {
                     Gizmos.color = Color.red; // El suelo construido se mantiene rojo
@@ -103,8 +109,7 @@ public class GridCreator : MonoBehaviour
             {
                 Gizmos.color = Color.green;
             }
-            Vector3 hoverPosition = new Vector3(gridPosition.x * cellSize + cellSize / 2f, 0, gridPosition.y * cellSize + cellSize / 2f);
-            Gizmos.DrawWireCube(hoverPosition, new Vector3(cellSize, 0.1f, cellSize));
+            Gizmos.DrawWireCube(GetCellWorldPosition(gridPosition), new Vector3(cellSize, 0.1f, cellSize));
         }
     }
 }
