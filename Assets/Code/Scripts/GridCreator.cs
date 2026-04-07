@@ -77,39 +77,64 @@ public class GridCreator : MonoBehaviour
         return new Vector3(gridPosition.x * cellSize + cellSize / 2f, 0, gridPosition.y * cellSize + cellSize / 2f);
     }
 
+    [Header("Gizmo Settings")]
+    [Tooltip("Radius (in cells) around the mouse to show grid gizmos")]
+    public int gizmoRadius = 3;
+
     void OnDrawGizmos()
     {
+        if (!Application.isPlaying) return;
+
+        Vector2 mouseGridPos = GetGridPosition();
+        bool inBuildMode = ZooTycoon.Core.GameManager.Instance != null && ZooTycoon.Core.GameManager.Instance.isBuildMode;
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                Vector3 position = GetCellWorldPosition(new Vector2(x, y));
+                Vector2 cell = new Vector2(x, y);
+                Vector3 position = GetCellWorldPosition(cell);
+                bool occupied = IsGridOccupied(cell);
 
-                if (Application.isPlaying && IsGridOccupied(new Vector2(x, y)))
+                // Occupied cells are ALWAYS visible in red
+                if (occupied)
                 {
-                    Gizmos.color = Color.red; // El suelo construido se mantiene rojo
+                    Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.6f);
                     Gizmos.DrawCube(position, new Vector3(cellSize, 0.1f, cellSize));
+                    continue;
+                }
+
+                // Free cells: only show if within radius of mouse
+                int dx = Mathf.Abs(x - (int)mouseGridPos.x);
+                int dy = Mathf.Abs(y - (int)mouseGridPos.y);
+
+                if (dx > gizmoRadius || dy > gizmoRadius) continue;
+
+                // The cell directly under the mouse
+                if (cell == mouseGridPos)
+                {
+                    if (inBuildMode)
+                    {
+                        Gizmos.color = new Color(0.2f, 1f, 0.4f, 0.5f);
+                        Gizmos.DrawCube(position, new Vector3(cellSize, 0.15f, cellSize));
+                    }
+                    else
+                    {
+                        Gizmos.color = new Color(1f, 1f, 1f, 0.4f);
+                        Gizmos.DrawWireCube(position, new Vector3(cellSize, 0.1f, cellSize));
+                    }
                 }
                 else
                 {
-                    Gizmos.color = Color.white;
+                    // Nearby cells fade out with distance
+                    float maxDist = gizmoRadius;
+                    float dist = Mathf.Max(dx, dy);
+                    float alpha = Mathf.Lerp(0.3f, 0.05f, dist / maxDist);
+
+                    Gizmos.color = new Color(1f, 1f, 1f, alpha);
                     Gizmos.DrawWireCube(position, new Vector3(cellSize, 0.1f, cellSize));
                 }
             }
-        }
-
-        if (ZooTycoon.Core.GameManager.Instance != null && ZooTycoon.Core.GameManager.Instance.isBuildMode)
-        {
-            Vector2 gridPosition = GetGridPosition();
-            if (IsGridOccupied(gridPosition))
-            {
-                Gizmos.color = Color.red;
-            }
-            else
-            {
-                Gizmos.color = Color.green;
-            }
-            Gizmos.DrawWireCube(GetCellWorldPosition(gridPosition), new Vector3(cellSize, 0.1f, cellSize));
         }
     }
 }
