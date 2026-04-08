@@ -11600,6 +11600,7 @@ MonoBehaviour:
   height: 150
   cellSize: 2
   gridParent: {fileID: 1317713324}
+  gizmoRadius: 3
 --- !u!4 &1317713324
 Transform:
   m_ObjectHideFlags: 0
