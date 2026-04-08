@@ -19,6 +19,12 @@ public class UIButton : MonoBehaviour,
     [Tooltip("Image/Text that receives color tinting. Auto-detected if empty.")]
     [SerializeField] private Graphic targetGraphic;
 
+    [Header("── Canvas Group (Disabled Alpha) ──")]
+    [Tooltip("Optional. When assigned, the entire button (including children) fades when disabled.")]
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private float disabledAlpha = 0.5f;
+    [SerializeField] private float enabledAlpha = 1f;
+
     [Header("── Scale Animation ──")]
     [SerializeField] private bool useScaleAnimation = true;
     [SerializeField] private float pressedScale = 0.9f;
@@ -48,12 +54,20 @@ public class UIButton : MonoBehaviour,
     [Tooltip("Auto-detected on this GameObject if empty.")]
     [SerializeField] private AudioSource audioSource;
 
+    [Header("── Long Press ──")]
+    [SerializeField] private bool useLongPress = false;
+    [Tooltip("Seconds the player must hold to trigger the long press.")]
+    [SerializeField] private float longPressTime = 0.6f;
+    [Tooltip("Optional fill image that shows hold progress (radial or horizontal).")]
+    [SerializeField] private Image longPressFillImage;
+
     [Header("── Cooldown ──")]
     [SerializeField] private bool useCooldown = false;
     [SerializeField] private float cooldownTime = 0.3f;
 
     [Header("── Events ──")]
     public UnityEvent OnClick;
+    public UnityEvent OnLongPress;
     public UnityEvent OnHoverEnter;
     public UnityEvent OnHoverExit;
     public UnityEvent OnDisabledClick;
@@ -64,12 +78,15 @@ public class UIButton : MonoBehaviour,
     private bool isPressed;
     private bool isSelected;
     private bool isOnCooldown;
+    private bool longPressTriggered;
+    private float pressTimer;
     private Vector3 originalScale;
 
     private Tween scaleTween;
     private Tween colorTween;
     private Tween shakeTween;
     private Tween cooldownTween;
+    private Tween canvasGroupTween;
 
     // ── Public Properties ──────────────────────────────────────
 
@@ -120,6 +137,12 @@ public class UIButton : MonoBehaviour,
 
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
+
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
+
+        if (longPressFillImage != null)
+            longPressFillImage.fillAmount = 0f;
     }
 
     private void OnEnable()
@@ -134,6 +157,29 @@ public class UIButton : MonoBehaviour,
         transform.localScale = originalScale;
         isHovered = false;
         isPressed = false;
+        ResetLongPress();
+    }
+
+    private void Update()
+    {
+        if (!useLongPress || !isPressed || longPressTriggered || !interactable) return;
+
+        pressTimer += Time.unscaledDeltaTime;
+
+        // Update fill visual
+        if (longPressFillImage != null)
+            longPressFillImage.fillAmount = Mathf.Clamp01(pressTimer / longPressTime);
+
+        // Trigger long press
+        if (pressTimer >= longPressTime)
+        {
+            longPressTriggered = true;
+            PlaySound(clickSound);
+            OnLongPress?.Invoke();
+
+            if (longPressFillImage != null)
+                longPressFillImage.fillAmount = 1f;
+        }
     }
 
     private void OnDestroy()
@@ -172,6 +218,8 @@ public class UIButton : MonoBehaviour,
         }
 
         isPressed = true;
+        longPressTriggered = false;
+        pressTimer = 0f;
         UpdateVisualState();
     }
 
@@ -179,11 +227,12 @@ public class UIButton : MonoBehaviour,
     {
         if (!interactable) return;
 
-        // Only fire click if pointer is still over the button
-        if (isPressed && isHovered)
+        // Only fire click if pointer is still over the button and long press didn't already fire
+        if (isPressed && isHovered && !longPressTriggered)
             ExecuteClick();
 
         isPressed = false;
+        ResetLongPress();
         UpdateVisualState();
     }
 
@@ -205,6 +254,25 @@ public class UIButton : MonoBehaviour,
         }
     }
 
+    /// <summary>
+    /// Trigger the button click from code (useful for tutorials or programmatic triggers).
+    /// Respects interactable and cooldown state.
+    /// </summary>
+    public void SimulateClick()
+    {
+        if (!interactable) return;
+        ExecuteClick();
+    }
+
+    private void ResetLongPress()
+    {
+        pressTimer = 0f;
+        longPressTriggered = false;
+
+        if (longPressFillImage != null)
+            longPressFillImage.fillAmount = 0f;
+    }
+
     private void HandleDisabledClick()
     {
         PlaySound(disabledClickSound);
@@ -224,6 +292,18 @@ public class UIButton : MonoBehaviour,
 
     private void UpdateVisualState(bool instant = false)
     {
+        // ── CanvasGroup alpha for disabled ──
+        if (canvasGroup != null)
+        {
+            float targetAlpha = interactable ? enabledAlpha : disabledAlpha;
+            canvasGroupTween?.Kill();
+
+            if (instant)
+                canvasGroup.alpha = targetAlpha;
+            else
+                canvasGroupTween = canvasGroup.DOFade(targetAlpha, colorDuration).SetUpdate(true);
+        }
+
         if (!interactable)
         {
             ApplyState(originalScale, disabledColor, instant);
@@ -306,10 +386,12 @@ public class UIButton : MonoBehaviour,
         colorTween?.Kill();
         shakeTween?.Kill();
         cooldownTween?.Kill();
+        canvasGroupTween?.Kill();
 
         scaleTween = null;
         colorTween = null;
         shakeTween = null;
         cooldownTween = null;
+        canvasGroupTween = null;
     }
 }
