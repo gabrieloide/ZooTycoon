@@ -8,7 +8,7 @@ namespace ZooTycoon.Data
     {
         public AnimalFamily familyA;
         public AnimalFamily familyB;
-        
+
         [Range(0, 100)]
         public float tensionMultiplier;
     }
@@ -17,7 +17,7 @@ namespace ZooTycoon.Data
     public class CompatibilityMatrix : ScriptableObject
     {
         [Header("Global Family Rules")]
-        public List<FamilyConflict> conflicts = new List<FamilyConflict>();
+        public List<FamilyConflict> conflicts = new();
 
         public float GetTension(AnimalFamily a, AnimalFamily b)
         {
@@ -25,13 +25,13 @@ namespace ZooTycoon.Data
 
             foreach (var conflict in conflicts)
             {
-                if ((conflict.familyA == a && conflict.familyB == b) || 
+                if ((conflict.familyA == a && conflict.familyB == b) ||
                     (conflict.familyA == b && conflict.familyB == a))
                 {
                     return conflict.tensionMultiplier;
                 }
             }
-            
+
             return 0f;
         }
     }
