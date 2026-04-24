@@ -65,8 +65,12 @@ public class UIButton : MonoBehaviour,
     [SerializeField] private bool useCooldown = false;
     [SerializeField] private float cooldownTime = 0.3f;
 
+    [Header("── Toggle ──")]
+    public bool IsToggle = false;
+
     [Header("── Events ──")]
     public UnityEvent OnClick;
+    public UnityEvent<bool> OnToggleChanged;
     public UnityEvent OnLongPress;
     public UnityEvent OnHoverEnter;
     public UnityEvent OnHoverExit;
@@ -243,6 +247,13 @@ public class UIButton : MonoBehaviour,
         if (useCooldown && isOnCooldown) return;
 
         PlaySound(clickSound);
+
+        if (IsToggle)
+        {
+            IsSelected = !IsSelected;
+            OnToggleChanged?.Invoke(isSelected);
+        }
+
         OnClick?.Invoke();
 
         if (useCooldown)
@@ -316,15 +327,17 @@ public class UIButton : MonoBehaviour,
             return;
         }
 
-        if (isHovered)
+        // If selected, we stay in selectedColor but can still use hoverScale for feedback
+        if (isSelected)
         {
-            ApplyState(originalScale * hoverScale, hoverColor, instant, releaseEase);
+            Vector3 targetScale = isHovered ? originalScale * hoverScale : originalScale;
+            ApplyState(targetScale, selectedColor, instant, releaseEase);
             return;
         }
 
-        if (isSelected)
+        if (isHovered)
         {
-            ApplyState(originalScale, selectedColor, instant, releaseEase);
+            ApplyState(originalScale * hoverScale, hoverColor, instant, releaseEase);
             return;
         }
 

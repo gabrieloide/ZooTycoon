@@ -1,7 +1,10 @@
 using UnityEngine;
+using ZooTycoon.UI;
+
 
 namespace ZooTycoon.Core
 {
+    [DefaultExecutionOrder(-100)]
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance { get; private set; }
@@ -9,11 +12,13 @@ namespace ZooTycoon.Core
         public bool isBuildMode { get; private set; }
 
         public event System.Action OnModeChanged;
+        public ShopDetector shopDetector;
 
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
+            shopDetector = FindAnyObjectByType<ShopDetector>();
         }
         void Update()
         {

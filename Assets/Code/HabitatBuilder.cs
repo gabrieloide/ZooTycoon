@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using ZooTycoon.Core;
+using ZooTycoon.Data;
 
 public class HabitatBuilder : MonoBehaviour
 {
@@ -11,6 +12,15 @@ public class HabitatBuilder : MonoBehaviour
     private Vector2 startDragGridPos;
     private Vector2 currentDragGridPos;
 
+    [SerializeField] private int minToBuildXY = 2;
+    [SerializeField] private int maxToBuildXY = 8;
+
+    [SerializeField] private string selectedHabitatType = "generic";
+
+    public void SelectHabitatType(string type)
+    {
+        selectedHabitatType = type;
+    }
     private void Start()
     {
         gridCreator = GridCreator.Instance;
@@ -46,12 +56,31 @@ public class HabitatBuilder : MonoBehaviour
                 FinalizeBuild();
             }
         }
-
+    }
+    public Vector2 GetSizeGrid(out bool isCorrect)
+    {
+        var sizeGrid = new Vector2(currentDragGridPos.x - startDragGridPos.x + 1, currentDragGridPos.y - startDragGridPos.y + 1);
+        if (sizeGrid.x >= minToBuildXY && sizeGrid.y >= minToBuildXY && sizeGrid.x < maxToBuildXY && sizeGrid.y < maxToBuildXY)
+        {
+            isCorrect = true;
+        }
+        else
+        {
+            isCorrect = false;
+        }
+        return sizeGrid;
     }
 
     private void FinalizeBuild()
     {
-        List<Vector2> cellsToBuild = GetCellsInRect(startDragGridPos, currentDragGridPos);
+        if (GameManager.Instance == null || GameManager.Instance.shopDetector.isOnShop) return;
+        var cellsToBuild = GetCellsInRect(startDragGridPos, currentDragGridPos);
+        GetSizeGrid(out bool isCorrect);
+        if (!isCorrect)
+        {
+            Debug.Log("Cannot build: Habitat is too small or too large");
+            return;
+        }
 
         bool canBuild = true;
         foreach (Vector2 cell in cellsToBuild)
@@ -70,6 +99,13 @@ public class HabitatBuilder : MonoBehaviour
 
         if (canBuild)
         {
+            HabitadManager.AddHabitad(new HabitadSpace
+            {
+                id = HabitadManager.GetNextId(),
+                type = "generic",
+                x = minX,
+                y = minY,
+            });
             foreach (Vector2 cell in cellsToBuild)
             {
                 gridCreator.SetGridOccupied(cell, true);
@@ -111,6 +147,7 @@ public class HabitatBuilder : MonoBehaviour
     {
         if (!Application.isPlaying || gridCreator == null) return;
         if (GameManager.Instance == null || !GameManager.Instance.isBuildMode) return;
+        if (GameManager.Instance.shopDetector.isOnShop) return;
 
         if (isDragging)
         {
@@ -125,7 +162,11 @@ public class HabitatBuilder : MonoBehaviour
                     break;
                 }
             }
-
+            GetSizeGrid(out bool isCorrect);
+            if (!isCorrect)
+            {
+                isValid = false;
+            }
             Gizmos.color = isValid ? new Color(0f, 1f, 0f, 0.4f) : new Color(1f, 0f, 0f, 0.4f);
 
             foreach (Vector2 cell in cellsToBuild)
