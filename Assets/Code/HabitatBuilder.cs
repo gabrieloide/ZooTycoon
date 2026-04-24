@@ -106,10 +106,12 @@ public class HabitatBuilder : MonoBehaviour
                 x = minX,
                 y = minY,
             });
+            var habitat = new GameObject($"Habitat {HabitadManager.GetNextId()}");
+            
             foreach (Vector2 cell in cellsToBuild)
             {
                 gridCreator.SetGridOccupied(cell, true);
-                EdgeBuilder(cell, minX, maxX, minY, maxY);
+                EdgeBuilder(cell, minX, maxX, minY, maxY, habitat.transform);
             }
         }
     }
@@ -133,14 +135,29 @@ public class HabitatBuilder : MonoBehaviour
 
         return cells;
     }
-    private void EdgeBuilder(Vector2 cell, int xMin, int xMax, int yMin, int yMax)
+    private void EdgeBuilder(Vector2 cell, int xMin, int xMax, int yMin, int yMax, Transform parent)
     {
-        var fence = new GameObject("fence");
         Vector3 position = gridCreator.GetCellWorldPosition(cell);
         if (cell.x == xMin || cell.x == xMax || cell.y == yMin || cell.y == yMax)
         {
-            var edgeCell = Instantiate(fence, position, Quaternion.identity);
-            edgeCell.transform.parent = transform;
+            GameObject edgeCell = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            edgeCell.name = "fence";
+            
+            Renderer renderer = edgeCell.GetComponent<Renderer>();
+            renderer.material.color = Color.red;
+
+            edgeCell.transform.position = position;
+            edgeCell.transform.parent = parent;
+
+            //get corner to full size
+            if(cell.x == xMin && cell.x == xMax && cell.y == yMin && cell.y == yMax)
+            {
+                edgeCell.transform.localScale = new Vector3(gridCreator.cellSize, 1.5f, 0.1f);
+            }
+            else if(cell.x == xMin && cell.y == yMin || cell.x == xMax && cell.y == yMin || cell.x == xMin && cell.y == yMax || cell.x == xMax && cell.y == yMax)
+            {
+                edgeCell.transform.localScale = new Vector3(gridCreator.cellSize, 1.5f, gridCreator.cellSize);
+            }
         }
     }
     private void OnDrawGizmos()
