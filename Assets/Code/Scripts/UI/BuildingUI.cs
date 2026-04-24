@@ -7,8 +7,8 @@ public class BuildingUI : MonoBehaviour
     [SerializeField] private Transform content;
     private readonly string[] habitatTypes = { "generic", "biome1", "biome2", "biome3", "biome4" };
     [SerializeField] private GameObject HabitadButtonPrefab;
+    private GameObject previousSelectedHabitat;
     private UIButton habitatButton;
-
     private HabitatBuilder habitatBuilder;
     private void Awake()
     {
@@ -48,19 +48,28 @@ public class BuildingUI : MonoBehaviour
         {
             var btn = Instantiate(habitatButton, content);
             btn.GetComponent<UIButton>().IsToggle = true;
-            btn.OnToggleChanged.AddListener((isSelected) => OnHabitatSelected(habitatTypes[i], isSelected));
+            var habitadType = habitatTypes[i];
+            btn.name = habitadType;
+            //buttons.Add(habitadType, btn.gameObject);
+            btn.OnToggleChanged.AddListener((isSelected) => OnHabitatSelected(btn.gameObject, habitadType, isSelected));
         }
     }
-    private void OnHabitatSelected(string type, bool isSelected)
+    private void OnHabitatSelected(GameObject btn, string type, bool isSelected)
     {
         if (isSelected)
         {
+            if (previousSelectedHabitat != null)
+            {
+                previousSelectedHabitat.GetComponent<UIButton>().IsSelected = false;
+            }
             habitatBuilder.SelectHabitatType(type);
+            previousSelectedHabitat = btn;
             Debug.Log("Habitat type selected: " + type);
         }
         else
         {
             habitatBuilder.SelectHabitatType(null);
+            previousSelectedHabitat = null;
         }
     }
 }

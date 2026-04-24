@@ -102,7 +102,7 @@ public class HabitatBuilder : MonoBehaviour
             HabitadManager.AddHabitad(new HabitadSpace
             {
                 id = HabitadManager.GetNextId(),
-                type = "generic",
+                type = selectedHabitatType,
                 x = minX,
                 y = minY,
             });
