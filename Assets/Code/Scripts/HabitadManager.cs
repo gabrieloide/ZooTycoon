@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public static class HabitadManager
 {
-    private static Dictionary<int, HabitadSpace> habitats = new Dictionary<int, HabitadSpace>();
+    private readonly static Dictionary<int, HabitadSpace> habitats = new();
 
     public static HabitadSpace GetHabitats(int id)
     {
