@@ -59,7 +59,7 @@ public class HabitatBuilder : MonoBehaviour
     }
     public Vector2 GetSizeGrid(out bool isCorrect)
     {
-        var sizeGrid = new Vector2(currentDragGridPos.x - startDragGridPos.x + 1, currentDragGridPos.y - startDragGridPos.y + 1);
+        var sizeGrid = new Vector2(Mathf.Abs(currentDragGridPos.x - startDragGridPos.x) + 1, Mathf.Abs(currentDragGridPos.y - startDragGridPos.y) + 1);
         if (sizeGrid.x >= minToBuildXY && sizeGrid.y >= minToBuildXY && sizeGrid.x < maxToBuildXY && sizeGrid.y < maxToBuildXY)
         {
             isCorrect = true;
@@ -92,10 +92,10 @@ public class HabitatBuilder : MonoBehaviour
             }
         }
 
-        int minX = Mathf.Min((int)startDragGridPos.x, (int)currentDragGridPos.x);
-        int maxX = Mathf.Max((int)startDragGridPos.x, (int)currentDragGridPos.x);
-        int minY = Mathf.Min((int)startDragGridPos.y, (int)currentDragGridPos.y);
-        int maxY = Mathf.Max((int)startDragGridPos.y, (int)currentDragGridPos.y);
+        int minX = Mathf.Min((int)startDragGridPos.x, Mathf.Abs((int)currentDragGridPos.x));
+        int maxX = Mathf.Max((int)startDragGridPos.x, Mathf.Abs((int)currentDragGridPos.x));
+        int minY = Mathf.Min((int)startDragGridPos.y, Mathf.Abs((int)currentDragGridPos.y));
+        int maxY = Mathf.Max((int)startDragGridPos.y, Mathf.Abs((int)currentDragGridPos.y));
 
         if (canBuild)
         {
@@ -107,7 +107,7 @@ public class HabitatBuilder : MonoBehaviour
                 y = minY,
             });
             var habitat = new GameObject($"Habitat {HabitadManager.GetNextId()}");
-            
+
             foreach (Vector2 cell in cellsToBuild)
             {
                 gridCreator.SetGridOccupied(cell, true);
@@ -120,10 +120,10 @@ public class HabitatBuilder : MonoBehaviour
     {
         List<Vector2> cells = new();
 
-        int minX = Mathf.Min((int)start.x, (int)end.x);
-        int maxX = Mathf.Max((int)start.x, (int)end.x);
-        int minY = Mathf.Min((int)start.y, (int)end.y);
-        int maxY = Mathf.Max((int)start.y, (int)end.y);
+        int minX = Mathf.Min((int)start.x, Mathf.Abs((int)end.x));
+        int maxX = Mathf.Max((int)start.x, Mathf.Abs((int)end.x));
+        int minY = Mathf.Min((int)start.y, Mathf.Abs((int)end.y));
+        int maxY = Mathf.Max((int)start.y, Mathf.Abs((int)end.y));
 
         for (int x = minX; x <= maxX; x++)
         {
@@ -142,7 +142,7 @@ public class HabitatBuilder : MonoBehaviour
         {
             GameObject edgeCell = GameObject.CreatePrimitive(PrimitiveType.Cube);
             edgeCell.name = "fence";
-            
+
             Renderer renderer = edgeCell.GetComponent<Renderer>();
             renderer.material.color = Color.red;
 
@@ -150,11 +150,11 @@ public class HabitatBuilder : MonoBehaviour
             edgeCell.transform.parent = parent;
 
             //get corner to full size
-            if(cell.x == xMin && cell.x == xMax && cell.y == yMin && cell.y == yMax)
+            if (cell.x == xMin && cell.x == xMax && cell.y == yMin && cell.y == yMax)
             {
                 edgeCell.transform.localScale = new Vector3(gridCreator.cellSize, 1.5f, 0.1f);
             }
-            else if(cell.x == xMin && cell.y == yMin || cell.x == xMax && cell.y == yMin || cell.x == xMin && cell.y == yMax || cell.x == xMax && cell.y == yMax)
+            else if (cell.x == xMin && cell.y == yMin || cell.x == xMax && cell.y == yMin || cell.x == xMin && cell.y == yMax || cell.x == xMax && cell.y == yMax)
             {
                 edgeCell.transform.localScale = new Vector3(gridCreator.cellSize, 1.5f, gridCreator.cellSize);
             }
