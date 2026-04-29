@@ -99,14 +99,17 @@ public class HabitatBuilder : MonoBehaviour
 
         if (canBuild)
         {
-            HabitadManager.AddHabitad(new HabitadSpace
-            {
-                id = HabitadManager.GetNextId(),
-                type = selectedHabitatType,
-                x = minX,
-                y = minY,
-            });
             var habitat = new GameObject($"Habitat {HabitadManager.GetNextId()}");
+            habitat.AddComponent<HabitadSpace>();
+            var habitadData = habitat.GetComponent<HabitadSpace>();
+            
+            habitadData.id = HabitadManager.GetNextId();
+            habitadData.type = selectedHabitatType;
+            habitadData.xMin = minX;
+            habitadData.xMax = maxX;
+            habitadData.yMin = minY;
+            habitadData.yMax = maxY;
+            HabitadManager.AddHabitad(habitadData);
             
             foreach (Vector2 cell in cellsToBuild)
             {
@@ -168,6 +171,7 @@ public class HabitatBuilder : MonoBehaviour
 
         if (isDragging)
         {
+            //Optimize this cells in the future 
             List<Vector2> cellsToBuild = GetCellsInRect(startDragGridPos, currentDragGridPos);
 
             bool isValid = true;
