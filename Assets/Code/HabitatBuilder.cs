@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ZooTycoon.Core;
 using ZooTycoon.Data;
 
+
 public class HabitatBuilder : MonoBehaviour
 {
     private GridCreator gridCreator;
@@ -25,7 +26,17 @@ public class HabitatBuilder : MonoBehaviour
     {
         gridCreator = GridCreator.Instance;
     }
+    private void CancelBuild(InputAction.CallbackContext context)
+    {
+        isDragging = false;
+        startDragGridPos = Vector2.zero;
+        currentDragGridPos = Vector2.zero;
+    }
 
+    private void OnEnable()
+    {
+        InputManager.Instance.actions.Player.CancelBuilding.performed += CancelBuild;
+    }
     private void Update()
     {
         if (GameManager.Instance == null || !GameManager.Instance.isBuildMode) return;
@@ -99,17 +110,17 @@ public class HabitatBuilder : MonoBehaviour
 
         if (canBuild)
         {
-            var habitat = new GameObject($"Habitat {HabitadManager.GetNextId()}");
-            habitat.AddComponent<HabitadSpace>();
-            var habitadData = habitat.GetComponent<HabitadSpace>();
+            var habitat = new GameObject($"Habitat {HabitatManager.GetNextId()}");
+            habitat.AddComponent<HabitatSpace>();
+            var habitatData = habitat.GetComponent<HabitatSpace>();
 
-            habitadData.id = HabitadManager.GetNextId();
-            habitadData.type = selectedHabitatType;
-            habitadData.xMin = minX;
-            habitadData.xMax = maxX;
-            habitadData.yMin = minY;
-            habitadData.yMax = maxY;
-            HabitadManager.AddHabitad(habitadData);
+            habitatData.id = HabitatManager.GetNextId();
+            habitatData.type = selectedHabitatType;
+            habitatData.xMin = minX;
+            habitatData.xMax = maxX;
+            habitatData.yMin = minY;
+            habitatData.yMax = maxY;
+            HabitatManager.AddHabitat(habitatData);
 
             foreach (Vector2 cell in cellsToBuild)
             {

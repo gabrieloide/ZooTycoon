@@ -12,7 +12,7 @@ public class TimeManager : MonoBehaviour
     public static Action onDayChanged;
     private float dayTotalSeconds;
     private int currentDay;
-    private float currentTime;
+    public float currentTime;
 
 
     private void Awake()

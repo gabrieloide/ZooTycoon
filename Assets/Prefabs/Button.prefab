@@ -52,6 +52,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactable: 1
   targetGraphic: {fileID: 0}
+  canvasGroup: {fileID: 0}
+  disabledAlpha: 0.5
+  enabledAlpha: 1
   useScaleAnimation: 1
   pressedScale: 0.9
   hoverScale: 1.05
@@ -71,9 +74,19 @@ MonoBehaviour:
   clickSound: {fileID: 0}
   disabledClickSound: {fileID: 0}
   audioSource: {fileID: 0}
+  useLongPress: 0
+  longPressTime: 0.6
+  longPressFillImage: {fileID: 0}
   useCooldown: 0
   cooldownTime: 0.3
+  IsToggle: 0
   OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+  OnToggleChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnLongPress:
     m_PersistentCalls:
       m_Calls: []
   OnHoverEnter:

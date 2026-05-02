@@ -3,16 +3,16 @@ using ZooTycoon.Core;
 
 public class BuildingUI : MonoBehaviour
 {
-    [SerializeField] private GameObject BuildingPanel;
+
     [SerializeField] private Transform content;
     private readonly string[] habitatTypes = { "generic", "biome1", "biome2", "biome3", "biome4" };
-    [SerializeField] private GameObject HabitadButtonPrefab;
+    [SerializeField] private GameObject habitadButtonPrefab;
     private GameObject previousSelectedHabitat;
     private UIButton habitatButton;
     private HabitatBuilder habitatBuilder;
     private void Awake()
     {
-        habitatButton = HabitadButtonPrefab.GetComponent<UIButton>();
+        habitatButton = habitadButtonPrefab.GetComponent<UIButton>();
         SelectorHabitats();
 
     }
@@ -35,11 +35,11 @@ public class BuildingUI : MonoBehaviour
     {
         if (GameManager.Instance.isBuildMode)
         {
-            BuildingPanel.SetActive(true);
+            PanelManager.Instance.OpenPanel("ShopPanel");
         }
         else
         {
-            BuildingPanel.SetActive(false);
+            PanelManager.Instance.ClosePanel("ShopPanel");
         }
     }
     private void SelectorHabitats()
@@ -50,7 +50,6 @@ public class BuildingUI : MonoBehaviour
             btn.GetComponent<UIButton>().IsToggle = true;
             var habitadType = habitatTypes[i];
             btn.name = habitadType;
-            //buttons.Add(habitadType, btn.gameObject);
             btn.OnToggleChanged.AddListener((isSelected) => OnHabitatSelected(btn.gameObject, habitadType, isSelected));
         }
     }
