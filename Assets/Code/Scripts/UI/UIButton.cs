@@ -86,6 +86,8 @@ public class UIButton : MonoBehaviour,
     private float pressTimer;
     private Vector3 originalScale;
 
+    private static int hoverCount = 0;
+
     private Tween scaleTween;
     private Tween colorTween;
     private Tween shakeTween;
@@ -108,7 +110,11 @@ public class UIButton : MonoBehaviour,
             // Reset interaction flags when disabling
             if (!interactable)
             {
-                isHovered = false;
+                if (isHovered)
+                {
+                    isHovered = false;
+                    hoverCount--;
+                }
                 isPressed = false;
             }
 
@@ -129,6 +135,9 @@ public class UIButton : MonoBehaviour,
             UpdateVisualState();
         }
     }
+
+    public bool IsHovered => isHovered;
+    public static bool AnyButtonHovered => hoverCount > 0;
 
     // ── Lifecycle ──────────────────────────────────────────────
 
@@ -159,7 +168,13 @@ public class UIButton : MonoBehaviour,
     {
         KillAllTweens();
         transform.localScale = originalScale;
-        isHovered = false;
+        
+        if (isHovered)
+        {
+            isHovered = false;
+            hoverCount--;
+        }
+        
         isPressed = false;
         ResetLongPress();
     }
@@ -195,7 +210,11 @@ public class UIButton : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (isHovered) return;
+        
         isHovered = true;
+        hoverCount++;
+        
         if (!interactable) return;
 
         PlaySound(hoverSound);
@@ -205,7 +224,11 @@ public class UIButton : MonoBehaviour,
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (!isHovered) return;
+        
         isHovered = false;
+        hoverCount--;
+        
         isPressed = false;
         if (!interactable) return;
 

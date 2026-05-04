@@ -39,7 +39,7 @@ public class HabitatBuilder : MonoBehaviour
     }
     private void Update()
     {
-        if (GameManager.Instance == null || !GameManager.Instance.isBuildMode) return;
+        if (GameManager.Instance == null || !GameManager.Instance.isBuildMode || UIButton.AnyButtonHovered) return;
         if (gridCreator == null) gridCreator = GridCreator.Instance;
         if (gridCreator == null) return;
 
@@ -84,7 +84,7 @@ public class HabitatBuilder : MonoBehaviour
 
     private void FinalizeBuild()
     {
-        if (GameManager.Instance == null || GameManager.Instance.shopDetector.isOnShop) return;
+        if (GameManager.Instance == null || GameManager.Instance.shopDetector.isOnShop || UIButton.AnyButtonHovered) return;
         var cellsToBuild = GetCellsInRect(startDragGridPos, currentDragGridPos);
         GetSizeGrid(out bool isCorrect);
         if (!isCorrect)
@@ -177,7 +177,7 @@ public class HabitatBuilder : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (!Application.isPlaying || gridCreator == null) return;
-        if (GameManager.Instance == null || !GameManager.Instance.isBuildMode) return;
+        if (GameManager.Instance == null || !GameManager.Instance.isBuildMode || UIButton.AnyButtonHovered) return;
         if (GameManager.Instance.shopDetector.isOnShop) return;
 
         if (isDragging)

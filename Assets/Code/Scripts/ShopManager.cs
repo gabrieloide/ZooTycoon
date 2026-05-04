@@ -4,6 +4,9 @@ using UnityEngine;
 public class ShopManager : MonoBehaviour
 {
     [SerializeField] private Transform parent;
+    [SerializeField] private ShopCatalog habitats;
+    [SerializeField] private ShopCatalog animals;
+    [SerializeField] private ShopCatalog decorations;
     private string currentContent = "Habitats";
     public event Action OnOpenShop;
     public event Action OnCloseShop;
@@ -25,18 +28,21 @@ public class ShopManager : MonoBehaviour
         ClearContent();
         currentContent = "Habitats";
         OnOpenHabitats?.Invoke();
+        PopulateContent(habitats);
     }
     public void OpenAnimals()
     {
         ClearContent();
         currentContent = "Animals";
         OnOpenAnimals?.Invoke();
+        PopulateContent(animals);
     }
     public void OpenDecorations()
     {
         ClearContent();
         currentContent = "Decorations";
         OnOpenDecorations?.Invoke();
+        PopulateContent(decorations);
     }
 
     public void ClearContent()
@@ -47,4 +53,11 @@ public class ShopManager : MonoBehaviour
         }
     }
     public string GetCurrentContent() => currentContent;
+    private void PopulateContent(ShopCatalog catalog)
+    {
+        foreach (GameObject item in catalog.items)
+        {
+            Instantiate(item, parent);
+        }
+    }
 }
