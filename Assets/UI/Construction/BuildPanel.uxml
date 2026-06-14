@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+>
+
+    <ui:VisualElement name="bottom-bar" style="position: absolute; bottom: 15px; left: 50%; translate: -50% 0; width: 90%;">
+
+        <ui:VisualElement name="shop-panel" style="display: none;">
+
+            <ui:Label name="lbl-grid-size" text="0 x | 0 y" style="color: white; font-size: 13px; -unity-font-style: bold; align-self: flex-end; margin-bottom: 4px;" />
+
+            <ui:VisualElement name="categories-shop" style="flex-direction: row; margin-bottom: 5px;">
+                <ui:Button name="btn-tab-habitats" text="Habitats" style="height: 35px; padding-left: 16px; padding-right: 16px; color: rgba(140,140,140,1); font-size: 12px; -unity-font-style: bold; background-color: rgba(30,30,30,0.9); border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-width: 0;" />
+                <ui:Button name="btn-tab-animals" text="Animals" style="height: 35px; padding-left: 16px; padding-right: 16px; color: rgba(140,140,140,1); font-size: 12px; -unity-font-style: bold; background-color: rgba(30,30,30,0.9); border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-width: 0; margin-left: 4px;" />
+                <ui:Button name="btn-tab-decorations" text="Decorations" style="height: 35px; padding-left: 16px; padding-right: 16px; color: rgba(140,140,140,1); font-size: 12px; -unity-font-style: bold; background-color: rgba(30,30,30,0.9); border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-width: 0; margin-left: 4px;" />
+            </ui:VisualElement>
+
+            <ui:ScrollView name="shop-content" scroll-deceleration-rate="0" elasticity="0" mode="Horizontal" style="background-color: rgba(0,0,0,0.75); width: 100%; height: 110px; flex-direction: row; padding: 10px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;" />
+
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

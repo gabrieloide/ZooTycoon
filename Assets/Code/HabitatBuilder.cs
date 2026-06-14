@@ -16,16 +16,19 @@ public class HabitatBuilder : MonoBehaviour
     [SerializeField] private int minToBuildXY = 2;
     [SerializeField] private int maxToBuildXY = 8;
 
-    [SerializeField] private string selectedHabitatType = "generic";
+    private BiomeDefinition selectedBiome;
+    [SerializeField] private CompatibilityMatrix globalMatrix;
 
-    public void SelectHabitatType(string type)
+    public void SelectHabitatType(BiomeDefinition biome)
     {
-        selectedHabitatType = type;
+        selectedBiome = biome;
     }
+
     private void Start()
     {
         gridCreator = GridCreator.Instance;
     }
+
     private void CancelBuild(InputAction.CallbackContext context)
     {
         isDragging = false;
@@ -37,6 +40,7 @@ public class HabitatBuilder : MonoBehaviour
     {
         InputManager.Instance.actions.Player.CancelBuilding.performed += CancelBuild;
     }
+
     private void Update()
     {
         if (GameManager.Instance == null || !GameManager.Instance.isBuildMode || UIButton.AnyButtonHovered) return;
@@ -68,23 +72,25 @@ public class HabitatBuilder : MonoBehaviour
             }
         }
     }
+
     public Vector2 GetSizeGrid(out bool isCorrect)
     {
-        var sizeGrid = new Vector2(Mathf.Abs(currentDragGridPos.x - startDragGridPos.x) + 1, Mathf.Abs(currentDragGridPos.y - startDragGridPos.y) + 1);
-        if (sizeGrid.x >= minToBuildXY && sizeGrid.y >= minToBuildXY && sizeGrid.x < maxToBuildXY && sizeGrid.y < maxToBuildXY)
-        {
-            isCorrect = true;
-        }
-        else
-        {
-            isCorrect = false;
-        }
+        var sizeGrid = new Vector2(
+            Mathf.Abs(currentDragGridPos.x - startDragGridPos.x) + 1,
+            Mathf.Abs(currentDragGridPos.y - startDragGridPos.y) + 1
+        );
+        isCorrect = sizeGrid.x >= minToBuildXY && sizeGrid.y >= minToBuildXY
+                 && sizeGrid.x < maxToBuildXY && sizeGrid.y < maxToBuildXY;
         return sizeGrid;
     }
 
     private void FinalizeBuild()
     {
-        if (GameManager.Instance == null || GameManager.Instance.shopDetector.isOnShop || UIButton.AnyButtonHovered) return;
+        if (selectedBiome == null) return;
+        if (GameManager.Instance == null) return;
+        if (GameManager.Instance.shopDetector != null && GameManager.Instance.shopDetector.isOnShop) return;
+        if (UIButton.AnyButtonHovered) return;
+
         var cellsToBuild = GetCellsInRect(startDragGridPos, currentDragGridPos);
         GetSizeGrid(out bool isCorrect);
         if (!isCorrect)
@@ -110,16 +116,20 @@ public class HabitatBuilder : MonoBehaviour
 
         if (canBuild)
         {
-            var habitat = new GameObject($"Habitat {HabitatManager.GetNextId()}");
+            int newId = HabitatManager.GetNextId();
+            var habitat = new GameObject($"Habitat_{selectedBiome.biomeID}_{newId}");
             habitat.AddComponent<HabitatSpace>();
             var habitatData = habitat.GetComponent<HabitatSpace>();
 
-            habitatData.id = HabitatManager.GetNextId();
-            habitatData.type = selectedHabitatType;
+            habitatData.id = newId;
+            habitatData.biome = selectedBiome;
             habitatData.xMin = minX;
             habitatData.xMax = maxX;
             habitatData.yMin = minY;
             habitatData.yMax = maxY;
+            int totalTiles = (maxX - minX + 1) * (maxY - minY + 1);
+            habitatData.maxOcupation = Mathf.Max(1, totalTiles / 4);
+            habitatData.globalMatrix = globalMatrix;
             HabitatManager.AddHabitat(habitatData);
 
             foreach (Vector2 cell in cellsToBuild)
@@ -149,6 +159,7 @@ public class HabitatBuilder : MonoBehaviour
 
         return cells;
     }
+
     private void EdgeBuilder(Vector2 cell, int xMin, int xMax, int yMin, int yMax, Transform parent)
     {
         Vector3 position = gridCreator.GetCellWorldPosition(cell);
@@ -163,26 +174,22 @@ public class HabitatBuilder : MonoBehaviour
             edgeCell.transform.position = position;
             edgeCell.transform.parent = parent;
 
-            //get corner to full size
             if (cell.x == xMin && cell.x == xMax && cell.y == yMin && cell.y == yMax)
-            {
                 edgeCell.transform.localScale = new Vector3(gridCreator.cellSize, 1.5f, 0.1f);
-            }
-            else if (cell.x == xMin && cell.y == yMin || cell.x == xMax && cell.y == yMin || cell.x == xMin && cell.y == yMax || cell.x == xMax && cell.y == yMax)
-            {
+            else if (cell.x == xMin && cell.y == yMin || cell.x == xMax && cell.y == yMin ||
+                     cell.x == xMin && cell.y == yMax || cell.x == xMax && cell.y == yMax)
                 edgeCell.transform.localScale = new Vector3(gridCreator.cellSize, 1.5f, gridCreator.cellSize);
-            }
         }
     }
+
     private void OnDrawGizmos()
     {
         if (!Application.isPlaying || gridCreator == null) return;
         if (GameManager.Instance == null || !GameManager.Instance.isBuildMode || UIButton.AnyButtonHovered) return;
-        if (GameManager.Instance.shopDetector.isOnShop) return;
+        if (GameManager.Instance.shopDetector != null && GameManager.Instance.shopDetector.isOnShop) return;
 
         if (isDragging)
         {
-            //Optimize this cells in the future 
             List<Vector2> cellsToBuild = GetCellsInRect(startDragGridPos, currentDragGridPos);
 
             bool isValid = true;
@@ -195,16 +202,11 @@ public class HabitatBuilder : MonoBehaviour
                 }
             }
             GetSizeGrid(out bool isCorrect);
-            if (!isCorrect)
-            {
-                isValid = false;
-            }
-            Gizmos.color = isValid ? new Color(0f, 1f, 0f, 0.4f) : new Color(1f, 0f, 0f, 0.4f);
+            if (!isCorrect) isValid = false;
 
+            Gizmos.color = isValid ? new Color(0f, 1f, 0f, 0.4f) : new Color(1f, 0f, 0f, 0.4f);
             foreach (Vector2 cell in cellsToBuild)
-            {
                 Gizmos.DrawCube(gridCreator.GetCellWorldPosition(cell), new Vector3(gridCreator.cellSize, 0.2f, gridCreator.cellSize));
-            }
         }
         else
         {

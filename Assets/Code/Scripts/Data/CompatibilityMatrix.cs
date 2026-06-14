@@ -19,6 +19,10 @@ namespace ZooTycoon.Data
         [Header("Global Family Rules")]
         public List<FamilyConflict> conflicts = new();
 
+        [Header("Stress Constants")]
+        public float overcrowdingPenaltyPerTile = 15f;
+        public float specificEnemyTension = 100f;
+
         public float GetTension(AnimalFamily a, AnimalFamily b)
         {
             if (a == b) return 0f;

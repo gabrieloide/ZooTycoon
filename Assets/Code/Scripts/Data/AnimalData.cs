@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using ZooTycoon.Data;
 
 namespace ZooTycoon.Data
 {
@@ -13,6 +12,7 @@ namespace ZooTycoon.Data
         public GameObject animalPrefab;
         [TextArea(3, 5)]
         public string description;
+
         [Header("Economy")]
         public int purchaseCost = 1000;
 
@@ -20,7 +20,11 @@ namespace ZooTycoon.Data
         public int requiredSpacePerAnimal = 4;
         public AnimalFamily family;
         public AnimalNature nature;
-        public HabitatSpace requiredHabitatType;
+        public BiomeDefinition requiredBiome;
+
+        [Header("Stress")]
+        public float stressAccumulationRate = 0.05f;
+        public float annoyanceCalmRate = 1f;
 
         [Header("Exceptions")]
         public List<AnimalData> specificEnemies = new();

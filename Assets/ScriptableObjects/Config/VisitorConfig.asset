@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bad9c3f3240c687429b4106eec695e07, type: 3}
+  m_Name: VisitorConfig
+  m_EditorClassIdentifier: 
+  spawnInterval: 10
+  maxVisitors: 30
+  satisfactionDecayRate: 1
+  fleeRadius: 5

@@ -10,7 +10,15 @@ public class Animal : MonoBehaviour
 
     public void UpdateAnnoyance()
     {
-        currentAnnoyance += Random.Range(0f, 0.1f);
+        if (habitat == null || data == null) return;
+
+        float tension = habitat.CalculateCurrentTension();
+        if (tension > 0)
+            currentAnnoyance += tension * data.stressAccumulationRate * Time.deltaTime;
+        else
+            currentAnnoyance -= data.annoyanceCalmRate * Time.deltaTime;
+
+        currentAnnoyance = Mathf.Clamp(currentAnnoyance, 0f, 100f);
     }
 
     private void Update()
