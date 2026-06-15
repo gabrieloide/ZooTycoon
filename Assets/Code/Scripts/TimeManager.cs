@@ -4,16 +4,33 @@ using UnityEngine;
 public class TimeManager : MonoBehaviour
 {
     public static TimeManager Instance { get; private set; }
-    [SerializeField] private readonly float dayDurationInMinutes = 5;
-    [SerializeField] private readonly int startHour = 8;
-    [SerializeField] private readonly int startMinute = 0;
-    [SerializeField] private readonly int endHour = 18;
-    [SerializeField] private readonly int endMinute = 0;
-    public static Action onDayChanged;
+
+    [SerializeField] private float dayDurationInMinutes = 5;
+
+    [Header("Complete Day")]
+    [SerializeField] private int startDayHour = 6;
+    [SerializeField] private int startDayMinute = 0;
+    [SerializeField] private int endDayHour = 22;
+    [SerializeField] private int endDayMinute = 0;
+
+    [Header("Work Day")]
+    [SerializeField] private int startWorkHour = 8;
+    [SerializeField] private int startWorkMinute = 0;
+    [SerializeField] private int endWorkHour = 18;
+    [SerializeField] private int endWorkMinute = 0;
+
+    public static Action onDayEnded;
+    public static Action onNewDayStart;
+    public static Action onWorkDayStart;
+    public static Action onWorkDayEnd;
+
     private float dayTotalSeconds;
     private int currentDay;
-    public float currentTime;
+    private float currentTime;
 
+    private bool newDayFired;
+    private bool workDayStartFired;
+    private bool workDayEndFired;
 
     private void Awake()
     {
@@ -22,47 +39,68 @@ public class TimeManager : MonoBehaviour
         else
             Destroy(gameObject);
     }
-    void Start()
+
+    private void Start()
     {
-        MinutesToSeconds();
+        dayTotalSeconds = dayDurationInMinutes * 60f;
     }
 
-    void Update()
+    private void Update()
     {
         currentTime += Time.deltaTime;
-        if (currentTime >= dayTotalSeconds)
-        {
-            OnNextDay();
-        }
+        CheckWorkDay();
     }
-    public void MinutesToSeconds() => dayTotalSeconds = dayDurationInMinutes * 60;
+
     public void OnNextDay()
     {
-        currentTime = 0;
+        currentTime = 0f;
         currentDay++;
-        onDayChanged?.Invoke();
+        newDayFired = false;
+        workDayStartFired = false;
+        workDayEndFired = false;
+        onDayEnded?.Invoke();
     }
+
     public int GetCurrentDay() => currentDay;
+
     public Vector2Int GetCurrentTimeInDay()
     {
-        if (dayTotalSeconds <= 0) return new Vector2Int(startHour, startMinute);
+        if (dayTotalSeconds <= 0) return new Vector2Int(startDayHour, startDayMinute);
 
-        int startTotalMinutes = startHour * 60 + startMinute;
-        int endTotalMinutes = endHour * 60 + endMinute;
-
-        if (endTotalMinutes <= startTotalMinutes)
-            endTotalMinutes += 24 * 60;
-
-        int totalOperatingMinutes = endTotalMinutes - startTotalMinutes;
+        int startTotal = startDayHour * 60 + startDayMinute;
+        int endTotal = endDayHour * 60 + endDayMinute;
+        if (endTotal <= startTotal) endTotal += 24 * 60;
 
         float progress = Mathf.Clamp01(currentTime / dayTotalSeconds);
+        int elapsed = (int)(progress * (endTotal - startTotal));
+        int current = startTotal + elapsed;
 
-        int elapsedGameMinutes = (int)(progress * totalOperatingMinutes);
-        int currentTotalMinutes = startTotalMinutes + elapsedGameMinutes;
+        return new Vector2Int((current / 60) % 24, current % 60);
+    }
 
-        int hours = (currentTotalMinutes / 60) % 24;
-        int minutes = currentTotalMinutes % 60;
+    private void CheckWorkDay()
+    {
+        var t = GetCurrentTimeInDay();
 
-        return new Vector2Int(hours, minutes);
+        if (!newDayFired && t.x == startDayHour && t.y == startDayMinute)
+        {
+            newDayFired = true;
+            onNewDayStart?.Invoke();
+        }
+
+        if (!workDayStartFired && t.x == startWorkHour && t.y == startWorkMinute)
+        {
+            workDayStartFired = true;
+            onWorkDayStart?.Invoke();
+        }
+
+        if (!workDayEndFired && t.x == endWorkHour && t.y == endWorkMinute)
+        {
+            workDayEndFired = true;
+            onWorkDayEnd?.Invoke();
+        }
+
+        if (t.x == endDayHour && t.y == endDayMinute)
+            OnNextDay();
     }
 }

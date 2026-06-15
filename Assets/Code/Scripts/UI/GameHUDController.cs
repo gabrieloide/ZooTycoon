@@ -60,7 +60,7 @@ namespace ZooTycoon.UI
 
             SetupTooltip(uiRoot);
 
-            TimeManager.onDayChanged += UpdateDayDisplay;
+            TimeManager.onDayEnded += UpdateDayDisplay;
             EconomyManager.OnCapitalChanged += UpdateMoneyDisplay;
 
             habitatBuilder = FindAnyObjectByType<HabitatBuilder>();
@@ -141,7 +141,7 @@ namespace ZooTycoon.UI
 
         private void OnDisable()
         {
-            TimeManager.onDayChanged -= UpdateDayDisplay;
+            TimeManager.onDayEnded -= UpdateDayDisplay;
             EconomyManager.OnCapitalChanged -= UpdateMoneyDisplay;
 
             if (GameManager.Instance != null)
