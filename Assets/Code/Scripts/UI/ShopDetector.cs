@@ -7,16 +7,19 @@ namespace ZooTycoon.UI
     public class ShopDetector : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public bool isOnShop;
+
+        public static bool IsOverShop { get; set; }
+
         public void OnPointerEnter(PointerEventData eventData)
         {
-            Debug.Log("ShopDetector: Pointer Down");
             isOnShop = true;
+            IsOverShop = true;
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            Debug.Log("ShopDetector: Pointer Up");
             isOnShop = false;
+            IsOverShop = false;
         }
     }
 }

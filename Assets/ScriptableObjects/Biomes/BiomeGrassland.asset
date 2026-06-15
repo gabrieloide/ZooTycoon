@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 145d0818305a7cf499e2336045568e04, type: 3}
   m_Name: BiomeGrassland
   m_EditorClassIdentifier: 
-  biomeID: 
-  displayName: 
+  biomeID: grassland
+  displayName: Grassland
+  description: "Open prairie biome. The cheapest and most accessible \u2014 starting
+    biome of the demo."
   icon: {fileID: 0}
-  buildCost: 0
-  dailyMaintenanceCost: 0
+  buildCost: 100
+  dailyMaintenanceCost: 5

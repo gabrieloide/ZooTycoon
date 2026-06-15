@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31ca9792a94b7e740b604f05741c0463, type: 3}
+  m_Name: Crocodile
+  m_EditorClassIdentifier: 
+  animalID: crocodile
+  displayName: Crocodile
+  animalPrefab: {fileID: 0}
+  description: Aggressive reptile. River predator that stresses birds and herbivores.
+  purchaseCost: 1500
+  requiredSpacePerAnimal: 6
+  family: 5
+  nature: 7
+  requiredBiome: {fileID: 11400000, guid: e0be8a8e1d2221142a9d0664587345da, type: 2}
+  stressAccumulationRate: 0.07
+  annoyanceCalmRate: 0.5
+  specificEnemies: []
+  specificFriends: []

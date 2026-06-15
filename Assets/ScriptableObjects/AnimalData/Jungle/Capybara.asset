@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31ca9792a94b7e740b604f05741c0463, type: 3}
+  m_Name: Capybara
+  m_EditorClassIdentifier: 
+  animalID: capybara
+  displayName: Capybara
+  animalPrefab: {fileID: 0}
+  description: "The calmest animal in the game. Compatible with almost everything
+    \u2014 ideal for buffering tension."
+  purchaseCost: 350
+  requiredSpacePerAnimal: 4
+  family: 2
+  nature: 6
+  requiredBiome: {fileID: 11400000, guid: 4f5356f73fa3ec34fb23212afca2b1dd, type: 2}
+  stressAccumulationRate: 0.01
+  annoyanceCalmRate: 2.5
+  specificEnemies: []
+  specificFriends: []

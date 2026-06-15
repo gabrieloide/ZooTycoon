@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 145d0818305a7cf499e2336045568e04, type: 3}
   m_Name: BiomeSnow
   m_EditorClassIdentifier: 
-  biomeID: 
-  displayName: 
+  biomeID: snow
+  displayName: Snow
+  description: Arctic biome. The most expensive to build and maintain. High-value,
+    high-risk animals.
   icon: {fileID: 0}
-  buildCost: 0
-  dailyMaintenanceCost: 0
+  buildCost: 200
+  dailyMaintenanceCost: 10

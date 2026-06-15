@@ -9,6 +9,8 @@ namespace ZooTycoon.Data
         [Header("Identity")]
         public string licenseID;
         public string displayName;
+        [TextArea(2, 4)]
+        public string description;
 
         [Header("Economy")]
         public int cost;

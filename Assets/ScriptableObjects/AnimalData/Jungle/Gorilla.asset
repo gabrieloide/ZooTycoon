@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31ca9792a94b7e740b604f05741c0463, type: 3}
+  m_Name: Gorilla
+  m_EditorClassIdentifier: 
+  animalID: gorilla
+  displayName: Gorilla
+  animalPrefab: {fileID: 0}
+  description: Territorial and dominant. Strong conflict with other primates and
+    predators.
+  purchaseCost: 2000
+  requiredSpacePerAnimal: 8
+  family: 4
+  nature: 2
+  requiredBiome: {fileID: 11400000, guid: 4f5356f73fa3ec34fb23212afca2b1dd, type: 2}
+  stressAccumulationRate: 0.08
+  annoyanceCalmRate: 0.5
+  specificEnemies: []
+  specificFriends: []

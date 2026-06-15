@@ -8,6 +8,8 @@ namespace ZooTycoon.Data
         [Header("Identity")]
         public string biomeID;
         public string displayName;
+        [TextArea(2, 4)]
+        public string description;
         public Sprite icon;
 
         [Header("Economy")]

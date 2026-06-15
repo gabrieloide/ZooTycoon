@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 145d0818305a7cf499e2336045568e04, type: 3}
-  m_Name: BiomeDesert
+  m_Name: BiomeJungle
   m_EditorClassIdentifier: 
-  biomeID: desert
-  displayName: Desert
-  description: Arid biome. Available from day 2 with the Desert license. More profitable
-    animals but higher risk.
+  biomeID: jungle
+  displayName: Jungle
+  description: "Dense jungle biome. Available with the Arctic license. Primates and
+    felines \u2014 high compatibility complexity."
   icon: {fileID: 0}
-  buildCost: 150
-  dailyMaintenanceCost: 8
+  buildCost: 130
+  dailyMaintenanceCost: 7

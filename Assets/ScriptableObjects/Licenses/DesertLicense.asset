@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 537ba9ba972434143acd2e42211e78da, type: 3}
-  m_Name: BasicLicense
+  m_Name: DesertLicense
   m_EditorClassIdentifier: 
-  licenseID: basic
-  displayName: Basic License
-  description: "Starting license \u2014 included at no cost. Enables construction
-    of grassland enclosures."
-  cost: 0
+  licenseID: desert
+  displayName: Desert License
+  description: Unlocks arid and aquatic biomes. Available to sign from day 2 at The
+    Office.
+  cost: 2000
   unlockedBiomes:
-  - {fileID: 11400000, guid: e592dab59fe1b9546a4b70d3f3c50aa7, type: 2}
+  - {fileID: 11400000, guid: 0cc8f2c1cd8362c46abde893a4f80bbd, type: 2}
+  - {fileID: 11400000, guid: e0be8a8e1d2221142a9d0664587345da, type: 2}

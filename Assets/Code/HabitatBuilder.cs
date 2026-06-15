@@ -43,7 +43,7 @@ public class HabitatBuilder : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance == null || !GameManager.Instance.isBuildMode || UIButton.AnyButtonHovered) return;
+        if (GameManager.Instance == null || !GameManager.Instance.isBuildMode || UIButton.AnyButtonHovered || ZooTycoon.UI.ShopDetector.IsOverShop) return;
         if (gridCreator == null) gridCreator = GridCreator.Instance;
         if (gridCreator == null) return;
 
@@ -88,8 +88,8 @@ public class HabitatBuilder : MonoBehaviour
     {
         if (selectedBiome == null) return;
         if (GameManager.Instance == null) return;
-        if (GameManager.Instance.shopDetector != null && GameManager.Instance.shopDetector.isOnShop) return;
-        if (UIButton.AnyButtonHovered) return;
+        if (ZooTycoon.UI.ShopDetector.IsOverShop || UIButton.AnyButtonHovered) return;
+
 
         var cellsToBuild = GetCellsInRect(startDragGridPos, currentDragGridPos);
         GetSizeGrid(out bool isCorrect);
@@ -100,6 +100,7 @@ public class HabitatBuilder : MonoBehaviour
         }
 
         bool canBuild = true;
+
         foreach (Vector2 cell in cellsToBuild)
         {
             if (gridCreator.IsGridOccupied(cell))
@@ -108,7 +109,6 @@ public class HabitatBuilder : MonoBehaviour
                 break;
             }
         }
-
         int minX = Mathf.Min((int)startDragGridPos.x, Mathf.Abs((int)currentDragGridPos.x));
         int maxX = Mathf.Max((int)startDragGridPos.x, Mathf.Abs((int)currentDragGridPos.x));
         int minY = Mathf.Min((int)startDragGridPos.y, Mathf.Abs((int)currentDragGridPos.y));
@@ -116,6 +116,11 @@ public class HabitatBuilder : MonoBehaviour
 
         if (canBuild)
         {
+            int totalTiles = (maxX - minX + 1) * (maxY - minY + 1);
+            if (!EconomyManager.Instance.CanAfford(selectedBiome.buildCost * totalTiles)) return;
+
+            EconomyManager.Instance.Spend(selectedBiome.buildCost * totalTiles);
+
             int newId = HabitatManager.GetNextId();
             var habitat = new GameObject($"Habitat_{selectedBiome.biomeID}_{newId}");
             habitat.AddComponent<HabitatSpace>();
@@ -127,7 +132,6 @@ public class HabitatBuilder : MonoBehaviour
             habitatData.xMax = maxX;
             habitatData.yMin = minY;
             habitatData.yMax = maxY;
-            int totalTiles = (maxX - minX + 1) * (maxY - minY + 1);
             habitatData.maxOcupation = Mathf.Max(1, totalTiles / 4);
             habitatData.globalMatrix = globalMatrix;
             HabitatManager.AddHabitat(habitatData);
@@ -185,8 +189,7 @@ public class HabitatBuilder : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (!Application.isPlaying || gridCreator == null) return;
-        if (GameManager.Instance == null || !GameManager.Instance.isBuildMode || UIButton.AnyButtonHovered) return;
-        if (GameManager.Instance.shopDetector != null && GameManager.Instance.shopDetector.isOnShop) return;
+        if (GameManager.Instance == null || !GameManager.Instance.isBuildMode || UIButton.AnyButtonHovered || ZooTycoon.UI.ShopDetector.IsOverShop) return;
 
         if (isDragging)
         {

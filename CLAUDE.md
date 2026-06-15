@@ -55,16 +55,21 @@ Un juego de gestión de crisis física donde el jugador controla en persona al g
 - **Estamina:** Limita cuántas crisis se atienden por minuto. Junto con la distancia, es el dial central de balanceo (frecuencia de eventos vs. capacidad de movimiento — el dial de Overcooked).
 
 ## 5. El Ciclo de Tiempo (Día/Noche)
-- **Duración:** Cada día dura X minutos reales (configurable en TimeManager, ya implementado con horario 8:00–18:00 y evento onDayChanged).
-- **Estructura:** Día = zoo abierto (visitantes, caos, mitigación). Noche = zoo cerrado (construcción). Planificación y caos no compiten por el mismo minuto.
-- **Urgencia:** El tiempo no se detiene. El estrés escala durante las horas de apertura y la estamina obliga a priorizar crisis antes del cierre de las 18:00.
+- **Duración:** Cada día dura X minutos reales (configurable en TimeManager, implementado con evento onDayChanged).
+- **Estructura del día:**
+  - **6:00** — Comienza el día. Zoo cerrado, sin visitantes. Ventana de planificación y construcción antes del caos.
+  - **8:00** — Abren las puertas. Visitantes entran y pagan taquilla. El ingreso empieza a subir. El estrés de animales tiene consecuencias económicas reales.
+  - **18:00** — Cierran las puertas. Visitantes salen, el ingreso se detiene. El jugador puede seguir moviéndose y construyendo, pero no hay más actividad económica hasta el siguiente día.
+  - **Dormir (trigger manual)** — El jugador decide cuándo terminar el día yendo a dormir. Eso dispara la liquidación diaria y avanza al día siguiente (6:00).
+- **Build mode:** SIEMPRE disponible, en cualquier momento del día. No se bloquea al abrir el zoo.
+- **Urgencia:** El estrés escala durante las horas de apertura (8:00–18:00) y la estamina limita cuántas crisis puedes atender antes del cierre.
 
 ## 6. Progresión del Prototipo
 - **Económica:** Capital bajo inicial y licencia básica (Pasto).
 - **Desbloqueo:** El dinero acumulado día a día permite firmar contratos más caros (Desierto/Nieve en la demo; biomas exóticos como Volcán o Nube en el juego completo): animales más rentables, mayor riesgo, y más terreno que cubrir a pie.
 
-## 7. Estado Actual (12 jun 2026)
-- ✅ Grid System O(1) · Habitat Builder con validación holográfica · Cámaras Cinemachine 3 · Avatar con estamina (sprint/drain/regen/tired) · TimeManager con ciclo de días y horario 8:00–18:00 · CompatibilityMatrix (SO) + acumulación de estrés en Animal · AnimalData completo · Shop con categorías · HUD parcial + StaminaUI.
-- ⏳ Pendiente: EconomyManager (capital/costos/taquilla), estado día/noche en gameplay (puertas con onDayChanged), completar Stress AI (bioma + sobrepoblación + caritas 2D), escape/recaptura, licencias, liquidación diaria, UI.
-- 🔧 Fixes: quitar `readonly` de campos serializados en TimeManager · mover números mágicos de Animal.cs (0.05f, 1f) a ScriptableObjects · recalcular tensión por eventos, no cada frame.
+## 7. Estado Actual (15 jun 2026)
+- ✅ Grid System O(1) · Habitat Builder con validación holográfica · Cámaras Cinemachine 3 · Avatar con estamina (sprint/drain/regen/tired) · TimeManager con ciclo de días y horario 8:00–18:00 · CompatibilityMatrix (SO) + acumulación de estrés en Animal · AnimalData completo · Shop con 4 tabs (Habitats/Animals/Decorations/Licenses) · HUD parcial + StaminaUI · `BiomeDefinition.description` + `LicenseData.description` (campos TextArea) · Tooltip de descripción en hover de items del shop · Tab de Licencias en BuildPanel.uxml · `ShopDetector.IsOverShop` estático bloqueando raycast y gizmos vía UI Toolkit TrickleDown · Precios de biomas actualizados a modelo por tile en Notion (Grassland $100 · Desert $150 · Snow $200 · Rivers $120 · Jungle $130; mantenimiento diario por tile también).
+- ⏳ Pendiente: cobro real por tile al construir (lógica en HabitatBuilder.FinalizeBuild) · EconomyManager conectado a construcción y taquilla · estado día/noche en gameplay (puertas con onDayChanged) · completar Stress AI (bioma + sobrepoblación + caritas 2D) · escape/recaptura · firma de licencias (lógica, no solo UI) · liquidación diaria.
+- 🔧 Fixes pendientes: quitar `readonly` de campos serializados en TimeManager · mover números mágicos de Animal.cs (0.05f, 1f) a ScriptableObjects · recalcular tensión por eventos, no cada frame · asignar en Inspector: `availableLicenses` en GameHUDController + `description` en los 3 assets de licencia.
 - 📅 Demo en Itch.io: 16 jul 2026. Checkpoint de diversión: fin de semana 3 (2 jul).
