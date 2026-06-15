@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 using ZooTycoon.Data;
 
 public static class HabitatManager
@@ -29,5 +30,16 @@ public static class HabitatManager
     }
 
     public static IReadOnlyCollection<HabitatSpace> GetAllHabitats() => habitats.Values;
+
+    public static HabitatSpace GetHabitatAtPosition(Vector2 gridPos)
+    {
+        foreach (var habitat in habitats.Values)
+        {
+            if (gridPos.x >= habitat.xMin && gridPos.x <= habitat.xMax &&
+                gridPos.y >= habitat.yMin && gridPos.y <= habitat.yMax)
+                return habitat;
+        }
+        return null;
+    }
 
 }

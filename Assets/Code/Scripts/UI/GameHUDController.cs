@@ -9,9 +9,6 @@ namespace ZooTycoon.UI
     [RequireComponent(typeof(UIDocument))]
     public class GameHUDController : MonoBehaviour
     {
-        [SerializeField] private List<BiomeDefinition> availableBiomes = new();
-        [SerializeField] private List<LicenseData> availableLicenses = new();
-
         private UIDocument uiDocument;
         private VisualElement uiRoot;
         private Label lblDay;
@@ -31,8 +28,10 @@ namespace ZooTycoon.UI
         private Label tooltipLblName;
         private Label tooltipLblDesc;
 
-        private HabitatBuilder habitatBuilder;
+        private BuildController buildController;
         private BiomeDefinition selectedBiome;
+        private AnimalData selectedAnimalData;
+        private Button selectedAnimalBtn;
 
         private void OnEnable()
         {
@@ -65,8 +64,9 @@ namespace ZooTycoon.UI
             TimeManager.onDayEnded += UpdateDayDisplay;
             EconomyManager.OnCapitalChanged += UpdateMoneyDisplay;
             VisitorManager.OnVisitorCountChanged += UpdateVisitorDisplay;
+            LicenseManager.OnLicensePurchased += OnLicensePurchasedHandler;
 
-            habitatBuilder = FindAnyObjectByType<HabitatBuilder>();
+            buildController = FindAnyObjectByType<BuildController>();
         }
 
         private void SetupTooltip(VisualElement root)
@@ -147,6 +147,7 @@ namespace ZooTycoon.UI
             TimeManager.onDayEnded -= UpdateDayDisplay;
             EconomyManager.OnCapitalChanged -= UpdateMoneyDisplay;
             VisitorManager.OnVisitorCountChanged -= UpdateVisitorDisplay;
+            LicenseManager.OnLicensePurchased -= OnLicensePurchasedHandler;
 
             if (GameManager.Instance != null)
                 GameManager.Instance.OnModeChanged -= UpdateModeUI;
@@ -167,9 +168,9 @@ namespace ZooTycoon.UI
                 lblTime.text = string.Format("{0:00}:{1:00}", t.x, t.y);
             }
 
-            if (GameManager.Instance != null && GameManager.Instance.isBuildMode && habitatBuilder != null && lblGridSize != null)
+            if (GameManager.Instance != null && GameManager.Instance.isBuildMode && buildController != null && lblGridSize != null)
             {
-                var size = habitatBuilder.GetSizeGrid(out bool isCorrect);
+                var size = buildController.GetSizeGrid(out bool isCorrect);
                 lblGridSize.text = $"{size.x} x | {size.y} y";
                 lblGridSize.style.color = isCorrect ? Color.green : Color.red;
             }
@@ -211,6 +212,10 @@ namespace ZooTycoon.UI
                 shopPanel.style.display = DisplayStyle.None;
                 HideTooltip();
                 ShopDetector.IsOverShop = false;
+                selectedAnimalData = null;
+                selectedAnimalBtn = null;
+                selectedBiome = null;
+                if (buildController != null) buildController.ClearSelection();
                 if (lblGridSize != null)
                 {
                     lblGridSize.text = "0 x | 0 y";
@@ -248,39 +253,49 @@ namespace ZooTycoon.UI
             ResetTabStyles();
             SetActiveTabStyle(btnTabHabitats);
 
-            if (availableBiomes == null || availableBiomes.Count == 0)
+            var biomes = LicenseManager.Instance != null
+                ? LicenseManager.Instance.GetUnlockedBiomes()
+                : new List<BiomeDefinition>();
+
+            if (biomes.Count == 0)
             {
-                Debug.LogWarning("GameHUDController: availableBiomes list is empty.");
+                var empty = new Label("No biomes unlocked. Purchase a license first.");
+                empty.style.color = Color.gray;
+                empty.style.whiteSpace = WhiteSpace.Normal;
+                empty.style.alignSelf = Align.Center;
+                empty.style.marginTop = 20;
+                shopContent.Add(empty);
                 return;
             }
 
-            foreach (var biome in availableBiomes)
+            foreach (var biome in biomes)
             {
                 if (biome == null) continue;
-                var btn = CreateShopButton(biome.displayName, $"${biome.buildCost}", biome.description);
+                var btn = CreateShopButton(biome.displayName, $"${biome.buildCost}/tile", biome.description);
                 if (selectedBiome == biome)
                     btn.style.backgroundColor = new Color(0.2f, 0.6f, 0.2f);
 
                 var captured = biome;
-                btn.clicked += () => OnBiomeSelected(btn, captured);
+                btn.clicked += () => OnBiomeSelected(captured);
                 shopContent.Add(btn);
             }
         }
 
-        private void OnBiomeSelected(Button btn, BiomeDefinition biome)
+        private void OnBiomeSelected(BiomeDefinition biome)
         {
             if (selectedBiome == biome)
             {
                 selectedBiome = null;
-                habitatBuilder.SelectHabitatType(null);
-                OpenHabitatsTab();
+                if (buildController != null) buildController.ClearSelection();
             }
             else
             {
                 selectedBiome = biome;
-                habitatBuilder.SelectHabitatType(biome);
-                OpenHabitatsTab();
+                selectedAnimalData = null;
+                selectedAnimalBtn = null;
+                if (buildController != null) buildController.SelectBiome(biome);
             }
+            OpenHabitatsTab();
         }
 
         private void OpenAnimalsTab()
@@ -300,8 +315,30 @@ namespace ZooTycoon.UI
             {
                 if (data == null) continue;
                 var btn = CreateShopButton(data.displayName, $"${data.purchaseCost}", data.description);
+                if (selectedAnimalData == data)
+                    btn.style.backgroundColor = new Color(0.2f, 0.6f, 0.2f);
+
+                var captured = data;
+                btn.clicked += () => OnAnimalSelected(captured);
                 shopContent.Add(btn);
             }
+        }
+
+        private void OnAnimalSelected(AnimalData data)
+        {
+            if (selectedAnimalData == data)
+            {
+                selectedAnimalData = null;
+                selectedAnimalBtn = null;
+                if (buildController != null) buildController.ClearSelection();
+            }
+            else
+            {
+                selectedAnimalData = data;
+                selectedBiome = null;
+                if (buildController != null) buildController.SelectAnimal(data);
+            }
+            OpenAnimalsTab();
         }
 
         private void OpenDecorationsTab()
@@ -325,7 +362,18 @@ namespace ZooTycoon.UI
             ResetTabStyles();
             SetActiveTabStyle(btnTabLicenses);
 
-            if (availableLicenses == null || availableLicenses.Count == 0)
+            if (LicenseManager.Instance == null)
+            {
+                var empty = new Label("LicenseManager not found in scene.");
+                empty.style.color = Color.gray;
+                empty.style.alignSelf = Align.Center;
+                empty.style.marginTop = 20;
+                shopContent.Add(empty);
+                return;
+            }
+
+            var licenses = LicenseManager.Instance.GetAllLicenses();
+            if (licenses == null || licenses.Count == 0)
             {
                 var empty = new Label("No licenses configured.");
                 empty.style.color = Color.gray;
@@ -335,14 +383,46 @@ namespace ZooTycoon.UI
                 return;
             }
 
-            foreach (var license in availableLicenses)
+            foreach (var license in licenses)
             {
                 if (license == null) continue;
-                string costLabel = license.cost <= 0 ? "Free" : $"${license.cost}";
+                bool purchased = LicenseManager.Instance.IsPurchased(license);
+                bool canAfford = license.cost <= 0 || (EconomyManager.Instance != null && EconomyManager.Instance.CanAfford(license.cost));
+
+                string costLabel = purchased ? "Owned" : (license.cost <= 0 ? "Free" : $"${license.cost}");
                 var btn = CreateShopButton(license.displayName, costLabel, license.description);
                 btn.style.width = 100;
+
+                if (purchased)
+                {
+                    btn.style.backgroundColor = new Color(0.15f, 0.45f, 0.15f);
+                    btn.SetEnabled(false);
+                }
+                else if (!canAfford)
+                {
+                    btn.style.backgroundColor = new Color(0.35f, 0.12f, 0.12f);
+                    btn.SetEnabled(false);
+                }
+                else
+                {
+                    var captured = license;
+                    btn.clicked += () => OnLicensePurchaseClicked(captured);
+                }
+
                 shopContent.Add(btn);
             }
+        }
+
+        private void OnLicensePurchaseClicked(LicenseData license)
+        {
+            LicenseManager.Instance.TryPurchase(license);
+            OpenLicensesTab();
+        }
+
+        private void OnLicensePurchasedHandler(LicenseData license)
+        {
+            if (shopContent != null)
+                OpenHabitatsTab();
         }
 
         private Button CreateShopButton(string title, string subtitle, string description = "")

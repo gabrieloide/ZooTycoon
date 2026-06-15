@@ -28,6 +28,12 @@ public class HabitatSpace : MonoBehaviour
         {
             var instance = Instantiate(animal.animalPrefab, transform);
             var animalComponent = instance.GetComponent<Animal>();
+            if (animalComponent == null)
+            {
+                Debug.LogError($"Prefab '{animal.animalPrefab.name}' is missing an Animal component.", instance);
+                Destroy(instance);
+                return;
+            }
             animalComponent.data = animal;
             animalComponent.habitat = this;
             animals.Add(animalComponent);
