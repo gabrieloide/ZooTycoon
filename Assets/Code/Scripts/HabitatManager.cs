@@ -28,4 +28,6 @@ public static class HabitatManager
         return id;
     }
 
+    public static IReadOnlyCollection<HabitatSpace> GetAllHabitats() => habitats.Values;
+
 }

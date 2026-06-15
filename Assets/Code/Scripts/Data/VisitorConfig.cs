@@ -8,6 +8,7 @@ namespace ZooTycoon.Data
         [Header("Spawning")]
         public float spawnInterval = 10f;
         public int maxVisitors = 30;
+        public int visitorsPerAnimal = 2;
 
         [Header("Behavior")]
         public float satisfactionDecayRate = 1f;

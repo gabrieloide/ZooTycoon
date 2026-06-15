@@ -24,7 +24,11 @@
             <ui:VisualElement style="background-color: rgba(0, 0, 0, 0.65); padding: 6px 12px; border-radius: 6px;">
                 <ui:Label name="lbl-money" text="$0" style="color: rgb(255, 255, 255); font-size: 22px; -unity-font-style: bold;" />
             </ui:VisualElement>
-            
+
+            <ui:VisualElement style="background-color: rgba(0, 0, 0, 0.65); padding: 6px 12px; border-radius: 6px;">
+                <ui:Label name="lbl-visitors" text="Visitors: 0" style="color: rgba(180,220,255,1); font-size: 16px; -unity-font-style: bold;" />
+            </ui:VisualElement>
+
         </ui:VisualElement>
 
 

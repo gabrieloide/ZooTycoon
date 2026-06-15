@@ -19,6 +19,7 @@ namespace ZooTycoon.UI
         private Label lblMode;
         private Label lblMoney;
         private Label lblGridSize;
+        private Label lblVisitors;
         private VisualElement shopPanel;
         private Button btnTabHabitats;
         private Button btnTabAnimals;
@@ -43,6 +44,7 @@ namespace ZooTycoon.UI
             lblMode = uiRoot.Q<Label>("lbl-mode");
             lblMoney = uiRoot.Q<Label>("lbl-money");
             lblGridSize = uiRoot.Q<Label>("lbl-grid-size");
+            lblVisitors = uiRoot.Q<Label>("lbl-visitors");
             shopPanel = uiRoot.Q<VisualElement>("shop-panel");
             btnTabHabitats = uiRoot.Q<Button>("btn-tab-habitats");
             btnTabAnimals = uiRoot.Q<Button>("btn-tab-animals");
@@ -62,6 +64,7 @@ namespace ZooTycoon.UI
 
             TimeManager.onDayEnded += UpdateDayDisplay;
             EconomyManager.OnCapitalChanged += UpdateMoneyDisplay;
+            VisitorManager.OnVisitorCountChanged += UpdateVisitorDisplay;
 
             habitatBuilder = FindAnyObjectByType<HabitatBuilder>();
         }
@@ -143,6 +146,7 @@ namespace ZooTycoon.UI
         {
             TimeManager.onDayEnded -= UpdateDayDisplay;
             EconomyManager.OnCapitalChanged -= UpdateMoneyDisplay;
+            VisitorManager.OnVisitorCountChanged -= UpdateVisitorDisplay;
 
             if (GameManager.Instance != null)
                 GameManager.Instance.OnModeChanged -= UpdateModeUI;
@@ -181,6 +185,12 @@ namespace ZooTycoon.UI
         {
             if (lblMoney != null)
                 lblMoney.text = $"${Mathf.RoundToInt(capital)}";
+        }
+
+        private void UpdateVisitorDisplay(int visitors)
+        {
+            if (lblVisitors != null)
+                lblVisitors.text = $"Visitors: {visitors}";
         }
 
         private void UpdateModeUI()
