@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalID: giraffe
   displayName: Giraffe
-  animalPrefab: {fileID: 0}
+  animalPrefab: {fileID: 2238119087405282134, guid: 8f98e74b342706147a0b96d1a13a3694, type: 3}
   description: "Large, calm herbivore. Needs a lot of space but generates little
     stress.\t"
   purchaseCost: 700

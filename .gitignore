@@ -66,3 +66,6 @@ crashlytics-build.properties
 
 # Packed anims
 *.anim.meta
+
+# Unity UI Toolkit auto-generated XSD schemas for IDE IntelliSense
+/UIElementsSchema/

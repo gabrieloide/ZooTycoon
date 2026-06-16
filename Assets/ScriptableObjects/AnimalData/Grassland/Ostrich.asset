@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalID: ostrich
   displayName: Ostrich
-  animalPrefab: {fileID: 0}
+  animalPrefab: {fileID: 2238119087405282134, guid: 8f98e74b342706147a0b96d1a13a3694, type: 3}
   description: Cheap and visually striking. Easy entry-level animal for day one.
   purchaseCost: 250
   requiredSpacePerAnimal: 2

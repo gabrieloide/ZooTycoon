@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace ZooTycoon.Core
 {
+    [DefaultExecutionOrder(-1000)]
     public class InputManager : MonoBehaviour
     {
         public static InputManager Instance { get; private set; }
