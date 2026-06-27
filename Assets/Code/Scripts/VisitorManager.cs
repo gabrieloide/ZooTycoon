@@ -13,6 +13,7 @@ public class VisitorManager : MonoBehaviour
 
     private Coroutine incomeCoroutine;
     private int currentVisitors;
+    private int escapePenaltyVisitors;
 
     public int CurrentVisitors => currentVisitors;
 
@@ -38,8 +39,21 @@ public class VisitorManager : MonoBehaviour
         TimeManager.onWorkDayEnd -= StopIncome;
     }
 
+    public void ApplyEscapePenalty(int visitorCount)
+    {
+        escapePenaltyVisitors += visitorCount;
+        BroadcastVisitorCount();
+    }
+
+    public void RemoveEscapePenalty(int visitorCount)
+    {
+        escapePenaltyVisitors = Mathf.Max(0, escapePenaltyVisitors - visitorCount);
+        BroadcastVisitorCount();
+    }
+
     private void StartIncome()
     {
+        escapePenaltyVisitors = 0;
         if (incomeCoroutine != null)
             StopCoroutine(incomeCoroutine);
         incomeCoroutine = StartCoroutine(IncomeLoop());
@@ -53,6 +67,7 @@ public class VisitorManager : MonoBehaviour
             incomeCoroutine = null;
         }
         currentVisitors = 0;
+        escapePenaltyVisitors = 0;
         OnVisitorCountChanged?.Invoke(currentVisitors);
     }
 
@@ -74,7 +89,14 @@ public class VisitorManager : MonoBehaviour
             if (habitat != null)
                 totalAnimals += habitat.currentOcupation;
         }
-        currentVisitors = Mathf.Min(totalAnimals * visitorConfig.visitorsPerAnimal, visitorConfig.maxVisitors);
+        currentVisitors = Mathf.Max(0,
+            Mathf.Min(totalAnimals * visitorConfig.visitorsPerAnimal, visitorConfig.maxVisitors)
+            - escapePenaltyVisitors);
+        BroadcastVisitorCount();
+    }
+
+    private void BroadcastVisitorCount()
+    {
         OnVisitorCountChanged?.Invoke(currentVisitors);
     }
 

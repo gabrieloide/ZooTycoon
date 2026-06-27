@@ -2,8 +2,74 @@
 <ui:UXML
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ui="UnityEngine.UIElements"
-    xmlns:uie="UnityEditor.UIElements"
     xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
 >
-    
+    <ui:VisualElement name="summary-backdrop" style="width: 100%; height: 100%; background-color: rgba(0,0,0,0.75); align-items: center; justify-content: center;">
+
+        <ui:VisualElement name="summary-card" style="
+            background-color: rgb(18,18,22);
+            border-radius: 12px;
+            border-width: 1px;
+            border-color: rgba(255,255,255,0.12);
+            padding: 32px 40px;
+            width: 460px;
+            min-height: 360px;
+        ">
+            <ui:Label name="lbl-summary-title" text="END OF DAY REPORT" style="
+                color: rgba(255,255,255,0.5);
+                font-size: 11px;
+                -unity-font-style: bold;
+                letter-spacing: 2px;
+                margin-bottom: 4px;
+                -unity-text-align: upper-center;
+            "/>
+            <ui:Label name="lbl-summary-day" text="DAY 1" style="
+                color: white;
+                font-size: 26px;
+                -unity-font-style: bold;
+                -unity-text-align: upper-center;
+                margin-bottom: 24px;
+            "/>
+
+            <ui:VisualElement name="summary-divider" style="height: 1px; background-color: rgba(255,255,255,0.1); margin-bottom: 20px;"/>
+
+            <ui:VisualElement name="row-income" class="summary-row" style="flex-direction: row; justify-content: space-between; margin-bottom: 10px;">
+                <ui:Label text="Visitor Income" style="color: rgba(255,255,255,0.65); font-size: 14px;"/>
+                <ui:Label name="lbl-income" text="+$0" style="color: rgb(120,220,120); font-size: 14px; -unity-font-style: bold;"/>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="row-build" class="summary-row" style="flex-direction: row; justify-content: space-between; margin-bottom: 10px;">
+                <ui:Label text="Construction &amp; Animals" style="color: rgba(255,255,255,0.65); font-size: 14px;"/>
+                <ui:Label name="lbl-build" text="-$0" style="color: rgb(220,120,120); font-size: 14px; -unity-font-style: bold;"/>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="row-maint" class="summary-row" style="flex-direction: row; justify-content: space-between; margin-bottom: 10px;">
+                <ui:Label text="Maintenance" style="color: rgba(255,255,255,0.65); font-size: 14px;"/>
+                <ui:Label name="lbl-maint" text="-$0" style="color: rgb(220,120,120); font-size: 14px; -unity-font-style: bold;"/>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="row-disaster" class="summary-row" style="flex-direction: row; justify-content: space-between; margin-bottom: 10px;">
+                <ui:Label text="Disaster Losses" style="color: rgba(255,255,255,0.65); font-size: 14px;"/>
+                <ui:Label name="lbl-disaster" text="-$0" style="color: rgb(220,80,80); font-size: 14px; -unity-font-style: bold;"/>
+            </ui:VisualElement>
+
+            <ui:VisualElement style="height: 1px; background-color: rgba(255,255,255,0.1); margin-top: 10px; margin-bottom: 16px;"/>
+
+            <ui:VisualElement name="row-net" style="flex-direction: row; justify-content: space-between; margin-bottom: 28px;">
+                <ui:Label text="NET" style="color: white; font-size: 18px; -unity-font-style: bold;"/>
+                <ui:Label name="lbl-net" text="$0" style="color: white; font-size: 18px; -unity-font-style: bold;"/>
+            </ui:VisualElement>
+
+            <ui:Button name="btn-next-day" text="START NEXT DAY" style="
+                height: 44px;
+                background-color: rgb(255,255,255);
+                color: rgb(10,10,10);
+                font-size: 13px;
+                -unity-font-style: bold;
+                border-radius: 6px;
+                border-width: 0px;
+            "/>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
 </ui:UXML>

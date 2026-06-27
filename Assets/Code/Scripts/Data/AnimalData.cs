@@ -25,6 +25,18 @@ namespace ZooTycoon.Data
         [Header("Stress")]
         public float stressAccumulationRate = 0.05f;
         public float annoyanceCalmRate = 1f;
+        public float wrongBiomeStressRate = 5f;
+
+        [Header("Movement")]
+        public float wanderSpeed = 1.5f;
+        public float wanderPauseMin = 1f;
+        public float wanderPauseMax = 4f;
+
+        [Header("Interaction")]
+        public float interactionRadius = 2f;
+        public float calmStressReduction = 30f;
+        public float calmStaminaCost = 20f;
+        public float calmDurationRequired = 2f;
 
         [Header("Exceptions")]
         public List<AnimalData> specificEnemies = new();

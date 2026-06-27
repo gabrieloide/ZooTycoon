@@ -20,15 +20,6 @@ public class LicenseManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    private void Start()
-    {
-        foreach (var license in allLicenses)
-        {
-            if (license != null && license.cost <= 0)
-                Unlock(license);
-        }
-    }
-
     public bool IsPurchased(LicenseData license) => license != null && purchasedIDs.Contains(license.licenseID);
 
     public bool TryPurchase(LicenseData license)

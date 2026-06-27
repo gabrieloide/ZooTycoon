@@ -130,6 +130,8 @@ GameObject:
   - component: {fileID: 1230763508}
   - component: {fileID: 1230763507}
   - component: {fileID: 1230763509}
+  - component: {fileID: 1230763510}
+  - component: {fileID: 1230763511}
   m_Layer: 0
   m_Name: PlayerHUD
   m_TagString: Untagged
@@ -183,16 +185,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40d8f524add77234cb8f8a34bc3e8d1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableBiomes:
-  - {fileID: 11400000, guid: 0cc8f2c1cd8362c46abde893a4f80bbd, type: 2}
-  - {fileID: 11400000, guid: e592dab59fe1b9546a4b70d3f3c50aa7, type: 2}
-  - {fileID: 11400000, guid: 4f5356f73fa3ec34fb23212afca2b1dd, type: 2}
-  - {fileID: 11400000, guid: e0be8a8e1d2221142a9d0664587345da, type: 2}
-  - {fileID: 11400000, guid: 0b5e94fa8e5756f4eada9a60527d26a3, type: 2}
-  availableLicenses:
-  - {fileID: 11400000, guid: 99a58380ca5563842a2378e0d3f9ee56, type: 2}
-  - {fileID: 11400000, guid: f97d72411867cba45a22bcdea0161b01, type: 2}
-  - {fileID: 11400000, guid: 32ceab5fa04941047a74ac90d26fb4b0, type: 2}
+--- !u!114 &1230763510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230763506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e008564dd47f344f8b98b62a4eaf9ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1230763511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230763506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0f54b8e725ab5c40929603ce624de4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

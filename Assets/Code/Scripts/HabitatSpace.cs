@@ -38,6 +38,19 @@ public class HabitatSpace : MonoBehaviour
             animalComponent.habitat = this;
             animals.Add(animalComponent);
             currentOcupation = animals.Count;
+
+            float cellSize = GridCreator.Instance != null ? GridCreator.Instance.cellSize : 1f;
+            float cx = (xMin + xMax + 1) * 0.5f * cellSize;
+            float cz = (yMin + yMax + 1) * 0.5f * cellSize;
+            instance.transform.position = new Vector3(cx, 0f, cz);
+
+            if (instance.GetComponent<AnimalStressBar>() == null)
+                instance.AddComponent<AnimalStressBar>();
+            if (instance.GetComponent<AnimalWandering>() == null)
+                instance.AddComponent<AnimalWandering>();
+            if (instance.GetComponent<AnimalInteraction>() == null)
+                instance.AddComponent<AnimalInteraction>();
+
             UpdateTemperament();
         }
     }
@@ -110,6 +123,21 @@ public class HabitatSpace : MonoBehaviour
 
         return totalTension;
     }
+
+    public void ResetAnimalStress()
+    {
+        foreach (var animal in animals)
+            if (animal != null) animal.currentAnnoyance = 0f;
+    }
+
+    public void AddStressToAll(float amount)
+    {
+        foreach (var animal in animals)
+            if (animal != null)
+                animal.currentAnnoyance = Mathf.Clamp(animal.currentAnnoyance + amount, 0f, 100f);
+    }
+
+    public System.Collections.Generic.IReadOnlyList<Animal> GetAnimals() => animals;
 
     private void Update()
     {

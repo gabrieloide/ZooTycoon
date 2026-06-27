@@ -2,8 +2,57 @@
 <ui:UXML
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ui="UnityEngine.UIElements"
-    xmlns:uie="UnityEditor.UIElements"
     xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
 >
-    
+    <ui:VisualElement name="office-backdrop" style="width: 100%; height: 100%; background-color: rgba(0,0,0,0.82); align-items: center; justify-content: center;">
+
+        <ui:VisualElement name="office-panel" style="
+            background-color: rgb(14,14,18);
+            border-radius: 10px;
+            border-width: 1px;
+            border-color: rgba(255,200,80,0.25);
+            padding: 28px 36px;
+            width: 560px;
+            max-height: 620px;
+        ">
+            <ui:Label text="PANIC ZOO AUTHORITY" style="
+                color: rgba(255,200,80,0.6);
+                font-size: 10px;
+                -unity-font-style: bold;
+                letter-spacing: 3px;
+                -unity-text-align: upper-center;
+                margin-bottom: 2px;
+            "/>
+            <ui:Label text="LICENSE &amp; CONTRACTS OFFICE" style="
+                color: white;
+                font-size: 20px;
+                -unity-font-style: bold;
+                -unity-text-align: upper-center;
+                margin-bottom: 6px;
+            "/>
+            <ui:Label name="lbl-office-capital" text="Available Capital: $0" style="
+                color: rgba(255,255,255,0.5);
+                font-size: 12px;
+                -unity-text-align: upper-center;
+                margin-bottom: 20px;
+            "/>
+
+            <ui:VisualElement style="height: 1px; background-color: rgba(255,200,80,0.2); margin-bottom: 20px;"/>
+
+            <ui:ScrollView name="contracts-list" style="flex-grow: 1; max-height: 380px;"/>
+
+            <ui:VisualElement style="height: 1px; background-color: rgba(255,255,255,0.08); margin-top: 16px; margin-bottom: 16px;"/>
+
+            <ui:Button name="btn-office-close" text="LEAVE OFFICE" style="
+                height: 40px;
+                background-color: rgba(255,255,255,0.08);
+                color: rgba(255,255,255,0.7);
+                font-size: 12px;
+                -unity-font-style: bold;
+                border-radius: 6px;
+                border-width: 0px;
+            "/>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
 </ui:UXML>
