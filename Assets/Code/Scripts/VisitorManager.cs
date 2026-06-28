@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using ZooTycoon.Core;
@@ -15,13 +14,14 @@ public class VisitorManager : MonoBehaviour
     [SerializeField] private VoidEventChannelSO onWorkDayStartChannel;
     [SerializeField] private VoidEventChannelSO onWorkDayEndChannel;
 
+    [Header("Event Channels Out")]
+    [SerializeField] private IntEventChannelSO onVisitorCountChangedChannel;
+
     private Coroutine incomeCoroutine;
     private int currentVisitors;
     private int escapePenaltyVisitors;
 
     public int CurrentVisitors => currentVisitors;
-
-    public static event Action<int> OnVisitorCountChanged;
 
     private void Awake()
     {
@@ -62,14 +62,10 @@ public class VisitorManager : MonoBehaviour
 
     private void StopIncome()
     {
-        if (incomeCoroutine != null)
-        {
-            StopCoroutine(incomeCoroutine);
-            incomeCoroutine = null;
-        }
+        if (incomeCoroutine != null) { StopCoroutine(incomeCoroutine); incomeCoroutine = null; }
         currentVisitors = 0;
         escapePenaltyVisitors = 0;
-        OnVisitorCountChanged?.Invoke(currentVisitors);
+        BroadcastVisitorCount();
     }
 
     private IEnumerator IncomeLoop()
@@ -86,25 +82,19 @@ public class VisitorManager : MonoBehaviour
     {
         int totalAnimals = 0;
         foreach (var habitat in HabitatManager.GetAllHabitats())
-        {
-            if (habitat != null)
-                totalAnimals += habitat.currentOcupation;
-        }
+            if (habitat != null) totalAnimals += habitat.currentOcupation;
+
         currentVisitors = Mathf.Max(0,
             Mathf.Min(totalAnimals * visitorConfig.visitorsPerAnimal, visitorConfig.maxVisitors)
             - escapePenaltyVisitors);
         BroadcastVisitorCount();
     }
 
-    private void BroadcastVisitorCount()
-    {
-        OnVisitorCountChanged?.Invoke(currentVisitors);
-    }
+    private void BroadcastVisitorCount() => onVisitorCountChangedChannel?.Raise(currentVisitors);
 
     private void CollectIncome()
     {
         if (currentVisitors <= 0 || EconomyManager.Instance == null || economyConfig == null) return;
-        float income = currentVisitors * economyConfig.baseTicketPrice;
-        EconomyManager.Instance.Earn(income);
+        EconomyManager.Instance.Earn(currentVisitors * economyConfig.baseTicketPrice);
     }
 }

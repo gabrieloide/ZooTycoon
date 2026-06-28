@@ -31,6 +31,11 @@ namespace ZooTycoon.UI
         [Header("Time Channels")]
         [SerializeField] private VoidEventChannelSO onDayEndedChannel;
 
+        [Header("Event Channels In")]
+        [SerializeField] private FloatEventChannelSO onCapitalChangedChannel;
+        [SerializeField] private IntEventChannelSO onVisitorCountChangedChannel;
+        [SerializeField] private LicenseEventChannelSO onLicensePurchasedChannel;
+
         private BuildController buildController;
         private BiomeDefinition selectedBiome;
         private AnimalData selectedAnimalData;
@@ -65,9 +70,9 @@ namespace ZooTycoon.UI
             SetupTooltip(uiRoot);
 
             onDayEndedChannel?.Subscribe(UpdateDayDisplay);
-            EconomyManager.OnCapitalChanged += UpdateMoneyDisplay;
-            VisitorManager.OnVisitorCountChanged += UpdateVisitorDisplay;
-            LicenseManager.OnLicensePurchased += OnLicensePurchasedHandler;
+            onCapitalChangedChannel?.Subscribe(UpdateMoneyDisplay);
+            onVisitorCountChangedChannel?.Subscribe(UpdateVisitorDisplay);
+            onLicensePurchasedChannel?.Subscribe(OnLicensePurchasedHandler);
 
             buildController = FindAnyObjectByType<BuildController>();
         }
@@ -143,14 +148,15 @@ namespace ZooTycoon.UI
 
             if (EconomyManager.Instance != null)
                 UpdateMoneyDisplay(EconomyManager.Instance.Capital);
+
         }
 
         private void OnDisable()
         {
             onDayEndedChannel?.Unsubscribe(UpdateDayDisplay);
-            EconomyManager.OnCapitalChanged -= UpdateMoneyDisplay;
-            VisitorManager.OnVisitorCountChanged -= UpdateVisitorDisplay;
-            LicenseManager.OnLicensePurchased -= OnLicensePurchasedHandler;
+            onCapitalChangedChannel?.Unsubscribe(UpdateMoneyDisplay);
+            onVisitorCountChangedChannel?.Unsubscribe(UpdateVisitorDisplay);
+            onLicensePurchasedChannel?.Unsubscribe(OnLicensePurchasedHandler);
 
             if (GameManager.Instance != null)
                 GameManager.Instance.OnModeChanged -= UpdateModeUI;

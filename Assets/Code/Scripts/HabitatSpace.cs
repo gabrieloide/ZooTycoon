@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using ZooTycoon.Core;
 using ZooTycoon.Data;
 
 public class HabitatSpace : MonoBehaviour
@@ -7,6 +8,9 @@ public class HabitatSpace : MonoBehaviour
     [Header("Identification")]
     public int id;
     public BiomeDefinition biome;
+
+    [Header("SO Architecture")]
+    [SerializeField] public HabitatRuntimeSet habitatSet;
 
     [Header("Grid Dimensions")]
     public int xMin;
@@ -21,6 +25,8 @@ public class HabitatSpace : MonoBehaviour
     public CompatibilityMatrix globalMatrix;
 
     private List<Animal> animals = new();
+
+    private void OnDisable() => habitatSet?.Remove(this);
 
     public void AddAnimal(AnimalData animal)
     {

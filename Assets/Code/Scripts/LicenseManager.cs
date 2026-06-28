@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ZooTycoon.Core;
@@ -10,9 +9,10 @@ public class LicenseManager : MonoBehaviour
 
     [SerializeField] private List<LicenseData> allLicenses = new();
 
-    private readonly HashSet<string> purchasedIDs = new();
+    [Header("Event Channels Out")]
+    [SerializeField] private LicenseEventChannelSO onLicensePurchasedChannel;
 
-    public static event Action<LicenseData> OnLicensePurchased;
+    private readonly HashSet<string> purchasedIDs = new();
 
     private void Awake()
     {
@@ -37,7 +37,7 @@ public class LicenseManager : MonoBehaviour
     private void Unlock(LicenseData license)
     {
         purchasedIDs.Add(license.licenseID);
-        OnLicensePurchased?.Invoke(license);
+        onLicensePurchasedChannel?.Raise(license);
     }
 
     public List<LicenseData> GetAllLicenses() => allLicenses;

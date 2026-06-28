@@ -6,6 +6,7 @@ using ZooTycoon.Data;
 public class HabitatBuilder : MonoBehaviour
 {
     [SerializeField] private CompatibilityMatrix globalMatrix;
+    [SerializeField] private HabitatRuntimeSet habitatSet;
 
     public void TryBuild(Vector2 start, Vector2 end, BiomeDefinition biome)
     {
@@ -38,6 +39,8 @@ public class HabitatBuilder : MonoBehaviour
         habitatData.yMax = maxY;
         habitatData.maxOcupation = Mathf.Max(1, totalTiles / 4);
         habitatData.globalMatrix = globalMatrix;
+        habitatData.habitatSet = habitatSet;
+        habitatSet?.Add(habitatData);
         HabitatManager.AddHabitat(habitatData);
 
         foreach (var cell in cellsToBuild)

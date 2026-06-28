@@ -1,6 +1,4 @@
 using UnityEngine;
-using System;
-using ZooTycoon.Core;
 using ZooTycoon.Data;
 
 namespace ZooTycoon.Core
@@ -24,19 +22,23 @@ namespace ZooTycoon.Core
         [SerializeField] private VoidEventChannelSO onNewDayStartChannel;
         [SerializeField] private VoidEventChannelSO onWorkDayEndChannel;
 
+        [Header("State Variables")]
+        [SerializeField] private FloatVariable capitalVariable;
+        [SerializeField] private FloatVariable loanDebtVariable;
+
+        [Header("Event Channels Out")]
+        [SerializeField] private FloatEventChannelSO onCapitalChangedChannel;
+        [SerializeField] private FloatEventChannelSO onLoanDebtChangedChannel;
+        [SerializeField] private DailySummaryEventChannelSO onDailySummaryReadyChannel;
+
         public float Capital { get; private set; }
         public float LoanDebt { get; private set; }
         public float LoanInterestRate => config != null ? config.loanInterestRate : 0.1f;
         public EconomyConfig GetConfig() => config;
 
-        public static event Action<float> OnCapitalChanged;
-        public static event Action<DailySummaryData> OnDailySummaryReady;
-        public static event Action<float> OnLoanDebtChanged;
-
         private float dailyIncome;
         private float dailyBuildExpenses;
         private float dailyDisasterLosses;
-        private float dailyLoanInterest;
 
         private void Awake()
         {
@@ -44,6 +46,8 @@ namespace ZooTycoon.Core
             else { Destroy(gameObject); return; }
 
             Capital = config != null ? config.startingCapital : 0f;
+            capitalVariable?.SetValue(Capital);
+            loanDebtVariable?.SetValue(0f);
         }
 
         private void OnEnable()
@@ -60,7 +64,7 @@ namespace ZooTycoon.Core
 
         private void Start()
         {
-            OnCapitalChanged?.Invoke(Capital);
+            BroadcastCapital();
         }
 
         public bool CanAfford(float cost) => Capital >= cost;
@@ -70,27 +74,36 @@ namespace ZooTycoon.Core
             if (amount <= 0f) return;
             Capital += amount;
             LoanDebt += amount;
-            OnCapitalChanged?.Invoke(Capital);
-            OnLoanDebtChanged?.Invoke(LoanDebt);
+            BroadcastCapital();
+            BroadcastLoanDebt();
         }
 
         public void Spend(float cost)
         {
             Capital -= cost;
             dailyBuildExpenses += cost;
-            OnCapitalChanged?.Invoke(Capital);
+            BroadcastCapital();
         }
 
         public void Earn(float amount)
         {
             Capital += amount;
             dailyIncome += amount;
-            OnCapitalChanged?.Invoke(Capital);
+            BroadcastCapital();
         }
 
-        public void RegisterDisasterLoss(float amount)
+        public void RegisterDisasterLoss(float amount) => dailyDisasterLosses += amount;
+
+        private void BroadcastCapital()
         {
-            dailyDisasterLosses += amount;
+            capitalVariable?.SetValue(Capital);
+            onCapitalChangedChannel?.Raise(Capital);
+        }
+
+        private void BroadcastLoanDebt()
+        {
+            loanDebtVariable?.SetValue(LoanDebt);
+            onLoanDebtChangedChannel?.Raise(LoanDebt);
         }
 
         private void ResetDailyLedger()
@@ -99,7 +112,6 @@ namespace ZooTycoon.Core
             dailyIncome = 0f;
             dailyBuildExpenses = 0f;
             dailyDisasterLosses = 0f;
-            dailyLoanInterest = 0f;
         }
 
         private void ApplyLoanInterest()
@@ -108,16 +120,14 @@ namespace ZooTycoon.Core
             float rate = config != null ? config.loanInterestRate : 0.1f;
             float interest = LoanDebt * rate;
             LoanDebt += interest;
-            dailyLoanInterest = interest;
             Spend(interest);
-            OnLoanDebtChanged?.Invoke(LoanDebt);
+            BroadcastLoanDebt();
         }
 
         private void CloseDailyLedger()
         {
             float maintenance = CalculateMaintenanceCost();
-            if (maintenance > 0f)
-                Spend(maintenance);
+            if (maintenance > 0f) Spend(maintenance);
 
             float pureConstruction = dailyBuildExpenses - maintenance - dailyDisasterLosses;
 
@@ -130,17 +140,15 @@ namespace ZooTycoon.Core
                 net = dailyIncome - dailyBuildExpenses
             };
 
-            OnDailySummaryReady?.Invoke(summary);
+            onDailySummaryReadyChannel?.Raise(summary);
         }
 
         private float CalculateMaintenanceCost()
         {
             float total = 0f;
             foreach (var habitat in HabitatManager.GetAllHabitats())
-            {
                 if (habitat != null && habitat.biome != null)
                     total += habitat.biome.dailyMaintenanceCost * habitat.GetTotalTiles();
-            }
             return total;
         }
     }
