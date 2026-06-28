@@ -4,8 +4,6 @@ using ZooTycoon.Core;
 
 public class BedTrigger : MonoBehaviour
 {
-    [SerializeField] private InteractPrompt prompt;
-
     private bool playerInRange;
 
     private void OnEnable()
@@ -30,13 +28,13 @@ public class BedTrigger : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
         playerInRange = true;
-        prompt?.Show();
+        InteractPrompt.Instance?.Show("Sleep");
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
         playerInRange = false;
-        prompt?.Hide();
+        InteractPrompt.Instance?.Hide();
     }
 }

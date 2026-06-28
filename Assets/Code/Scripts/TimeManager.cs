@@ -1,5 +1,5 @@
-using System;
 using UnityEngine;
+using ZooTycoon.Core;
 
 public class TimeManager : MonoBehaviour
 {
@@ -20,10 +20,11 @@ public class TimeManager : MonoBehaviour
     [SerializeField] private int endWorkHour = 18;
     [SerializeField] private int endWorkMinute = 0;
 
-    public static Action onNewDayStart;
-    public static Action onWorkDayStart;
-    public static Action onWorkDayEnd;
-    public static Action onDayEnded;
+    [Header("Event Channels")]
+    [SerializeField] private VoidEventChannelSO onNewDayStart;
+    [SerializeField] private VoidEventChannelSO onWorkDayStart;
+    [SerializeField] private VoidEventChannelSO onWorkDayEnd;
+    [SerializeField] private VoidEventChannelSO onDayEnded;
 
     private float dayTotalSeconds;
     private int currentDay;
@@ -36,10 +37,8 @@ public class TimeManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     private void Start()
@@ -106,22 +105,22 @@ public class TimeManager : MonoBehaviour
         if (!newDayStartFired && t.x == startDayHour && t.y == startDayMinute)
         {
             newDayStartFired = true;
-            onNewDayStart?.Invoke();
+            onNewDayStart?.Raise();
         }
         if (!workDayStartFired && t.x == startWorkHour && t.y == startWorkMinute)
         {
             workDayStartFired = true;
-            onWorkDayStart?.Invoke();
+            onWorkDayStart?.Raise();
         }
         if (!workDayEndFired && t.x == endWorkHour && t.y == endWorkMinute)
         {
             workDayEndFired = true;
-            onWorkDayEnd?.Invoke();
+            onWorkDayEnd?.Raise();
         }
         if (!dayEndedFired && t.x == endDayHour && t.y == endDayMinute)
         {
             dayEndedFired = true;
-            onDayEnded?.Invoke();
+            onDayEnded?.Raise();
         }
     }
 }

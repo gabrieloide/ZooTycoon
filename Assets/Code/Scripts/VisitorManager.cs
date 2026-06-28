@@ -11,6 +11,10 @@ public class VisitorManager : MonoBehaviour
     [SerializeField] private VisitorConfig visitorConfig;
     [SerializeField] private EconomyConfig economyConfig;
 
+    [Header("Time Channels")]
+    [SerializeField] private VoidEventChannelSO onWorkDayStartChannel;
+    [SerializeField] private VoidEventChannelSO onWorkDayEndChannel;
+
     private Coroutine incomeCoroutine;
     private int currentVisitors;
     private int escapePenaltyVisitors;
@@ -21,22 +25,20 @@ public class VisitorManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     private void OnEnable()
     {
-        TimeManager.onWorkDayStart += StartIncome;
-        TimeManager.onWorkDayEnd += StopIncome;
+        onWorkDayStartChannel?.Subscribe(StartIncome);
+        onWorkDayEndChannel?.Subscribe(StopIncome);
     }
 
     private void OnDisable()
     {
-        TimeManager.onWorkDayStart -= StartIncome;
-        TimeManager.onWorkDayEnd -= StopIncome;
+        onWorkDayStartChannel?.Unsubscribe(StartIncome);
+        onWorkDayEndChannel?.Unsubscribe(StopIncome);
     }
 
     public void ApplyEscapePenalty(int visitorCount)
@@ -54,8 +56,7 @@ public class VisitorManager : MonoBehaviour
     private void StartIncome()
     {
         escapePenaltyVisitors = 0;
-        if (incomeCoroutine != null)
-            StopCoroutine(incomeCoroutine);
+        if (incomeCoroutine != null) StopCoroutine(incomeCoroutine);
         incomeCoroutine = StartCoroutine(IncomeLoop());
     }
 

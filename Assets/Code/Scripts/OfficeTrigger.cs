@@ -4,8 +4,6 @@ using ZooTycoon.Core;
 
 public class OfficeTrigger : MonoBehaviour
 {
-    [SerializeField] private InteractPrompt prompt;
-
     private bool playerInRange;
 
     private void OnEnable()
@@ -30,14 +28,14 @@ public class OfficeTrigger : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
         playerInRange = true;
-        prompt?.Show();
+        InteractPrompt.Instance?.Show("Enter Office");
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
         playerInRange = false;
-        prompt?.Hide();
+        InteractPrompt.Instance?.Hide();
         if (OfficeController.Instance != null)
             OfficeController.Instance.Hide();
     }

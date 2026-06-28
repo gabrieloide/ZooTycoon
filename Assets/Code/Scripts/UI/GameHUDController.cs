@@ -28,6 +28,9 @@ namespace ZooTycoon.UI
         private Label tooltipLblName;
         private Label tooltipLblDesc;
 
+        [Header("Time Channels")]
+        [SerializeField] private VoidEventChannelSO onDayEndedChannel;
+
         private BuildController buildController;
         private BiomeDefinition selectedBiome;
         private AnimalData selectedAnimalData;
@@ -61,7 +64,7 @@ namespace ZooTycoon.UI
 
             SetupTooltip(uiRoot);
 
-            TimeManager.onDayEnded += UpdateDayDisplay;
+            onDayEndedChannel?.Subscribe(UpdateDayDisplay);
             EconomyManager.OnCapitalChanged += UpdateMoneyDisplay;
             VisitorManager.OnVisitorCountChanged += UpdateVisitorDisplay;
             LicenseManager.OnLicensePurchased += OnLicensePurchasedHandler;
@@ -144,7 +147,7 @@ namespace ZooTycoon.UI
 
         private void OnDisable()
         {
-            TimeManager.onDayEnded -= UpdateDayDisplay;
+            onDayEndedChannel?.Unsubscribe(UpdateDayDisplay);
             EconomyManager.OnCapitalChanged -= UpdateMoneyDisplay;
             VisitorManager.OnVisitorCountChanged -= UpdateVisitorDisplay;
             LicenseManager.OnLicensePurchased -= OnLicensePurchasedHandler;

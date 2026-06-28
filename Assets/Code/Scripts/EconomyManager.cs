@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using ZooTycoon.Core;
 using ZooTycoon.Data;
 
 namespace ZooTycoon.Core
@@ -19,6 +20,10 @@ namespace ZooTycoon.Core
 
         [SerializeField] private EconomyConfig config;
 
+        [Header("Time Channels")]
+        [SerializeField] private VoidEventChannelSO onNewDayStartChannel;
+        [SerializeField] private VoidEventChannelSO onWorkDayEndChannel;
+
         public float Capital { get; private set; }
         public float LoanDebt { get; private set; }
         public float LoanInterestRate => config != null ? config.loanInterestRate : 0.1f;
@@ -35,24 +40,22 @@ namespace ZooTycoon.Core
 
         private void Awake()
         {
-            if (Instance == null)
-                Instance = this;
-            else
-                Destroy(gameObject);
+            if (Instance == null) Instance = this;
+            else { Destroy(gameObject); return; }
 
             Capital = config != null ? config.startingCapital : 0f;
         }
 
         private void OnEnable()
         {
-            TimeManager.onNewDayStart += ResetDailyLedger;
-            TimeManager.onWorkDayEnd += CloseDailyLedger;
+            onNewDayStartChannel?.Subscribe(ResetDailyLedger);
+            onWorkDayEndChannel?.Subscribe(CloseDailyLedger);
         }
 
         private void OnDisable()
         {
-            TimeManager.onNewDayStart -= ResetDailyLedger;
-            TimeManager.onWorkDayEnd -= CloseDailyLedger;
+            onNewDayStartChannel?.Unsubscribe(ResetDailyLedger);
+            onWorkDayEndChannel?.Unsubscribe(CloseDailyLedger);
         }
 
         private void Start()

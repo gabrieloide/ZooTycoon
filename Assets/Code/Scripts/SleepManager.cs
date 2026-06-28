@@ -1,4 +1,5 @@
 using UnityEngine;
+using ZooTycoon.Core;
 
 public class SleepManager : MonoBehaviour
 {
@@ -6,26 +7,28 @@ public class SleepManager : MonoBehaviour
 
     [SerializeField] private float autoSleepStressPenalty = 25f;
 
+    [Header("Time Channels")]
+    [SerializeField] private VoidEventChannelSO onNewDayStartChannel;
+    [SerializeField] private VoidEventChannelSO onDayEndedChannel;
+
     private bool voluntarySleptToday;
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     private void OnEnable()
     {
-        TimeManager.onNewDayStart += OnNewDayStarted;
-        TimeManager.onDayEnded += HandleAutoSleep;
+        onNewDayStartChannel?.Subscribe(OnNewDayStarted);
+        onDayEndedChannel?.Subscribe(HandleAutoSleep);
     }
 
     private void OnDisable()
     {
-        TimeManager.onNewDayStart -= OnNewDayStarted;
-        TimeManager.onDayEnded -= HandleAutoSleep;
+        onNewDayStartChannel?.Unsubscribe(OnNewDayStarted);
+        onDayEndedChannel?.Unsubscribe(HandleAutoSleep);
     }
 
     public void TrySleep()
@@ -43,7 +46,6 @@ public class SleepManager : MonoBehaviour
             voluntarySleptToday = false;
             return;
         }
-
         ApplyStressPenalty();
         TimeManager.Instance.ForceNewDay(true);
     }
