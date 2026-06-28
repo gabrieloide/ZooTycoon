@@ -185,6 +185,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40d8f524add77234cb8f8a34bc3e8d1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onDayEndedChannel: {fileID: 11400000, guid: 64ae5f3c66a07134fbd9036ad8eb8407, type: 2}
+  onCapitalChangedChannel: {fileID: 11400000, guid: a9012bac0f131d747a5aeb328ba9ea3f, type: 2}
+  onVisitorCountChangedChannel: {fileID: 11400000, guid: bda17fc260dcfd24a819a46419c8d0b0, type: 2}
+  onLicensePurchasedChannel: {fileID: 11400000, guid: 4ecde4321e59f49409ef99ae29cab1c9, type: 2}
 --- !u!114 &1230763510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,6 +201,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e008564dd47f344f8b98b62a4eaf9ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onDailySummaryReadyChannel: {fileID: 11400000, guid: 5bf0f0c50a6aad84b8f85b6bd6d216ec, type: 2}
+  capitalVariable: {fileID: 11400000, guid: feeb0579aed1a2e4d90995d2d2cef7fd, type: 2}
+  loanDebtVariable: {fileID: 11400000, guid: c4f6f6f5804c27549bc1414ba80e83f3, type: 2}
 --- !u!114 &1230763511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,6 +216,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0f54b8e725ab5c40929603ce624de4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onCapitalChangedChannel: {fileID: 11400000, guid: a9012bac0f131d747a5aeb328ba9ea3f, type: 2}
+  onLicensePurchasedChannel: {fileID: 11400000, guid: 4ecde4321e59f49409ef99ae29cab1c9, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

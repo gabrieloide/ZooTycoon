@@ -270,6 +270,11 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: ff2ffa1d1eb48674895cdb7f796ed80e, type: 2}
   onNewDayStartChannel: {fileID: 11400000, guid: b65aa56b6277890468cc2f1c78cf5702, type: 2}
   onWorkDayEndChannel: {fileID: 11400000, guid: 9e4fae2809be40444ac7d89cd5cf759c, type: 2}
+  capitalVariable: {fileID: 11400000, guid: feeb0579aed1a2e4d90995d2d2cef7fd, type: 2}
+  loanDebtVariable: {fileID: 11400000, guid: c4f6f6f5804c27549bc1414ba80e83f3, type: 2}
+  onCapitalChangedChannel: {fileID: 11400000, guid: a9012bac0f131d747a5aeb328ba9ea3f, type: 2}
+  onLoanDebtChangedChannel: {fileID: 11400000, guid: f6bd3284717616643b3ea03699604d80, type: 2}
+  onDailySummaryReadyChannel: {fileID: 11400000, guid: 5bf0f0c50a6aad84b8f85b6bd6d216ec, type: 2}
 --- !u!4 &171607361
 Transform:
   m_ObjectHideFlags: 0
@@ -1054,6 +1059,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 32ceab5fa04941047a74ac90d26fb4b0, type: 2}
   - {fileID: 11400000, guid: f97d72411867cba45a22bcdea0161b01, type: 2}
   - {fileID: 11400000, guid: 99a58380ca5563842a2378e0d3f9ee56, type: 2}
+  onLicensePurchasedChannel: {fileID: 11400000, guid: 4ecde4321e59f49409ef99ae29cab1c9, type: 2}
 --- !u!4 &767309577
 Transform:
   m_ObjectHideFlags: 0
@@ -1682,6 +1688,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   globalMatrix: {fileID: 11400000, guid: 7c2f4ac15b58d644b92d03f5326e8d1b, type: 2}
+  habitatSet: {fileID: 11400000, guid: dd604f8465befa8429bb2dc30458bce0, type: 2}
 --- !u!4 &1813116293
 Transform:
   m_ObjectHideFlags: 0
@@ -1825,6 +1832,7 @@ MonoBehaviour:
   economyConfig: {fileID: 11400000, guid: ff2ffa1d1eb48674895cdb7f796ed80e, type: 2}
   onWorkDayStartChannel: {fileID: 11400000, guid: b663d72b825df754897cd78d38da60ff, type: 2}
   onWorkDayEndChannel: {fileID: 11400000, guid: 9e4fae2809be40444ac7d89cd5cf759c, type: 2}
+  onVisitorCountChangedChannel: {fileID: 11400000, guid: bda17fc260dcfd24a819a46419c8d0b0, type: 2}
 --- !u!4 &1907242075
 Transform:
   m_ObjectHideFlags: 0
