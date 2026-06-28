@@ -236,6 +236,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   promptRoot: {fileID: 0}
   canvasGroup: {fileID: 0}
+  actionLabel: {fileID: 0}
   animDuration: 0.18
 --- !u!1 &171607359
 GameObject:
@@ -267,6 +268,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: ff2ffa1d1eb48674895cdb7f796ed80e, type: 2}
+  onNewDayStartChannel: {fileID: 11400000, guid: b65aa56b6277890468cc2f1c78cf5702, type: 2}
+  onWorkDayEndChannel: {fileID: 11400000, guid: 9e4fae2809be40444ac7d89cd5cf759c, type: 2}
 --- !u!4 &171607361
 Transform:
   m_ObjectHideFlags: 0
@@ -403,7 +406,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cc1e6703bd58444291910e8853793d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prompt: {fileID: 0}
 --- !u!1 &308277422
 GameObject:
   m_ObjectHideFlags: 0
@@ -939,6 +941,10 @@ MonoBehaviour:
   startWorkMinute: 0
   endWorkHour: 18
   endWorkMinute: 0
+  onNewDayStart: {fileID: 11400000, guid: b65aa56b6277890468cc2f1c78cf5702, type: 2}
+  onWorkDayStart: {fileID: 11400000, guid: b663d72b825df754897cd78d38da60ff, type: 2}
+  onWorkDayEnd: {fileID: 11400000, guid: 9e4fae2809be40444ac7d89cd5cf759c, type: 2}
+  onDayEnded: {fileID: 11400000, guid: 64ae5f3c66a07134fbd9036ad8eb8407, type: 2}
   currentTime: 0
 --- !u!1 &617965389
 GameObject:
@@ -1360,7 +1366,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c979d58db04a0e04c8de82d575a75ca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prompt: {fileID: 0}
 --- !u!1 &1317713322
 GameObject:
   m_ObjectHideFlags: 0
@@ -1818,6 +1823,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visitorConfig: {fileID: 11400000, guid: 9e49a1cc564ee4544ad271bb2787fa06, type: 2}
   economyConfig: {fileID: 11400000, guid: ff2ffa1d1eb48674895cdb7f796ed80e, type: 2}
+  onWorkDayStartChannel: {fileID: 11400000, guid: b663d72b825df754897cd78d38da60ff, type: 2}
+  onWorkDayEndChannel: {fileID: 11400000, guid: 9e4fae2809be40444ac7d89cd5cf759c, type: 2}
 --- !u!4 &1907242075
 Transform:
   m_ObjectHideFlags: 0
@@ -1878,6 +1885,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoSleepStressPenalty: 25
+  onNewDayStartChannel: {fileID: 11400000, guid: b65aa56b6277890468cc2f1c78cf5702, type: 2}
+  onDayEndedChannel: {fileID: 11400000, guid: 64ae5f3c66a07134fbd9036ad8eb8407, type: 2}
 --- !u!1 &2087233505
 GameObject:
   m_ObjectHideFlags: 0
