@@ -10,13 +10,6 @@
       },
       "hash": "ec0f32df120cd941fb6f769c7309a7d92a8ef7ab"
     },
-    "com.termway.ide.antigravity": {
-      "version": "https://github.com/TermWay/unity-ide-antigravity.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "e5e981edf16a5c85f2c1a00209deee6626544bc5"
-    },
     "com.unity.burst": {
       "version": "1.8.26",
       "depth": 2,

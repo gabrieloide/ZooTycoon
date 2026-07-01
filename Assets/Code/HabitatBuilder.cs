@@ -2,25 +2,65 @@ using System.Collections.Generic;
 using UnityEngine;
 using ZooTycoon.Core;
 using ZooTycoon.Data;
+using ZooTycoon.Save;
 
 public class HabitatBuilder : MonoBehaviour
 {
     [SerializeField] private CompatibilityMatrix globalMatrix;
     [SerializeField] private HabitatRuntimeSet habitatSet;
 
+    public HabitatSpace RebuildHabitat(HabitatSaveData data, BiomeDefinition biome)
+    {
+        var gridCreator = GridCreator.Instance;
+        if (gridCreator == null || biome == null) return null;
+
+        var habitatGO = new GameObject($"Habitat_{biome.biomeID}_{data.id}");
+        var habitatData = habitatGO.AddComponent<HabitatSpace>();
+
+        habitatData.id = data.id;
+        habitatData.biome = biome;
+        habitatData.xMin = data.xMin;
+        habitatData.xMax = data.xMax;
+        habitatData.yMin = data.yMin;
+        habitatData.yMax = data.yMax;
+        habitatData.maxOcupation = data.maxOcupation;
+        habitatData.globalMatrix = globalMatrix;
+        habitatData.habitatSet = habitatSet;
+        habitatData.totalBuildCost = data.totalBuildCost;
+        habitatData.buildSession = data.buildSession;
+
+        habitatSet?.Add(habitatData);
+        HabitatManager.AddHabitat(habitatData);
+
+        var fences = new List<GameObject>();
+        var cells = GetCellsInRect(new Vector2(data.xMin, data.yMin), new Vector2(data.xMax, data.yMax));
+        foreach (var cell in cells)
+        {
+            gridCreator.SetGridOccupied(cell, true);
+            var fence = EdgeBuilder(cell, data.xMin, data.xMax, data.yMin, data.yMax, habitatGO.transform);
+            if (fence != null) fences.Add(fence);
+        }
+        habitatData.SetFences(fences);
+
+        return habitatData;
+    }
+
     public void TryBuild(Vector2 start, Vector2 end, BiomeDefinition biome)
     {
         var gridCreator = GridCreator.Instance;
         if (gridCreator == null || biome == null) return;
 
-        int minX = Mathf.Min((int)start.x, Mathf.Abs((int)end.x));
-        int maxX = Mathf.Max((int)start.x, Mathf.Abs((int)end.x));
-        int minY = Mathf.Min((int)start.y, Mathf.Abs((int)end.y));
-        int maxY = Mathf.Max((int)start.y, Mathf.Abs((int)end.y));
+        int minX = Mathf.Min((int)start.x, (int)end.x);
+        int maxX = Mathf.Max((int)start.x, (int)end.x);
+        int minY = Mathf.Min((int)start.y, (int)end.y);
+        int maxY = Mathf.Max((int)start.y, (int)end.y);
 
         var cellsToBuild = GetCellsInRect(start, end);
         foreach (var cell in cellsToBuild)
             if (gridCreator.IsGridOccupied(cell)) return;
+
+        if (globalMatrix != null && HabitatManager.IsTooCloseToAnyHabitat(minX, maxX, minY, maxY, globalMatrix.minHabitatDistance))
+            return;
 
         int totalTiles = (maxX - minX + 1) * (maxY - minY + 1);
         if (EconomyManager.Instance == null || !EconomyManager.Instance.CanAfford(biome.buildCost * totalTiles)) return;
@@ -40,30 +80,38 @@ public class HabitatBuilder : MonoBehaviour
         habitatData.maxOcupation = Mathf.Max(1, totalTiles / 4);
         habitatData.globalMatrix = globalMatrix;
         habitatData.habitatSet = habitatSet;
+        habitatData.totalBuildCost = biome.buildCost * totalTiles;
+        habitatData.buildSession = BuildController.CurrentSession;
         habitatSet?.Add(habitatData);
         HabitatManager.AddHabitat(habitatData);
 
+        foreach (var h in HabitatManager.GetAllHabitats())
+            h.RefreshNeighborTension();
+
+        var fences = new List<GameObject>();
         foreach (var cell in cellsToBuild)
         {
             gridCreator.SetGridOccupied(cell, true);
-            EdgeBuilder(cell, minX, maxX, minY, maxY, habitatGO.transform);
+            var fence = EdgeBuilder(cell, minX, maxX, minY, maxY, habitatGO.transform);
+            if (fence != null) fences.Add(fence);
         }
+        habitatData.SetFences(fences);
     }
 
     private List<Vector2> GetCellsInRect(Vector2 start, Vector2 end)
     {
         var cells = new List<Vector2>();
-        int minX = Mathf.Min((int)start.x, Mathf.Abs((int)end.x));
-        int maxX = Mathf.Max((int)start.x, Mathf.Abs((int)end.x));
-        int minY = Mathf.Min((int)start.y, Mathf.Abs((int)end.y));
-        int maxY = Mathf.Max((int)start.y, Mathf.Abs((int)end.y));
+        int minX = Mathf.Min((int)start.x, (int)end.x);
+        int maxX = Mathf.Max((int)start.x, (int)end.x);
+        int minY = Mathf.Min((int)start.y, (int)end.y);
+        int maxY = Mathf.Max((int)start.y, (int)end.y);
         for (int x = minX; x <= maxX; x++)
             for (int y = minY; y <= maxY; y++)
                 cells.Add(new Vector2(x, y));
         return cells;
     }
 
-    private void EdgeBuilder(Vector2 cell, int xMin, int xMax, int yMin, int yMax, Transform parent)
+    private GameObject EdgeBuilder(Vector2 cell, int xMin, int xMax, int yMin, int yMax, Transform parent)
     {
         var gridCreator = GridCreator.Instance;
         Vector3 position = gridCreator.GetCellWorldPosition(cell);
@@ -80,6 +128,9 @@ public class HabitatBuilder : MonoBehaviour
             else if ((cell.x == xMin && cell.y == yMin) || (cell.x == xMax && cell.y == yMin) ||
                      (cell.x == xMin && cell.y == yMax) || (cell.x == xMax && cell.y == yMax))
                 edgeCell.transform.localScale = new Vector3(gridCreator.cellSize, 1.5f, gridCreator.cellSize);
+
+            return edgeCell;
         }
+        return null;
     }
 }

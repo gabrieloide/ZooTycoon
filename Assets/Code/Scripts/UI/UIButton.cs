@@ -88,6 +88,9 @@ public class UIButton : MonoBehaviour,
 
     private static int hoverCount = 0;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics() => hoverCount = 0;
+
     private Tween scaleTween;
     private Tween colorTween;
     private Tween shakeTween;

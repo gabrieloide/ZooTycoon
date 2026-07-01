@@ -13,5 +13,13 @@ public class AnimalPlacer : MonoBehaviour
         if (EconomyManager.Instance == null || !EconomyManager.Instance.CanAfford(data.purchaseCost)) return;
         EconomyManager.Instance.Spend(data.purchaseCost);
         habitat.AddAnimal(data);
+
+        var animalList = habitat.GetAnimals();
+        if (animalList.Count > 0)
+        {
+            var placed = animalList[animalList.Count - 1];
+            placed.purchaseCost = data.purchaseCost;
+            placed.buildSession = BuildController.CurrentSession;
+        }
     }
 }

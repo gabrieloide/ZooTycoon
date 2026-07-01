@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using ZooTycoon.Data;
 
@@ -9,6 +10,18 @@ public class Animal : MonoBehaviour
 
     public float currentAnnoyance;
     public bool hasEscaped;
+
+    [HideInInspector] public float purchaseCost;
+    [HideInInspector] public int buildSession;
+
+    private static readonly List<Animal> escapedAnimals = new();
+    public static IReadOnlyList<Animal> EscapedAnimals => escapedAnimals;
+
+    public float GetSellRefund(float staledRate)
+    {
+        float rate = buildSession == BuildController.CurrentSession ? 1f : staledRate;
+        return purchaseCost * rate;
+    }
 
     public static event Action<Animal> OnAnimalEscaped;
     public static event Action<Animal> OnAnimalRecaptured;
@@ -47,6 +60,8 @@ public class Animal : MonoBehaviour
     {
         hasEscaped = true;
         transform.SetParent(null);
+        habitat?.BreakFence();
+        escapedAnimals.Add(this);
         OnAnimalEscaped?.Invoke(this);
     }
 
@@ -54,12 +69,20 @@ public class Animal : MonoBehaviour
     {
         currentAnnoyance = 0f;
         hasEscaped = false;
+        escapedAnimals.Remove(this);
         if (habitat != null)
         {
             transform.SetParent(habitat.transform);
             transform.position = GetHabitatWorldCenter();
+            if (!habitat.HasEscapedAnimals())
+                habitat.RepairFence();
         }
         OnAnimalRecaptured?.Invoke(this);
+    }
+
+    private void OnDestroy()
+    {
+        escapedAnimals.Remove(this);
     }
 
     private Vector3 GetHabitatWorldCenter()

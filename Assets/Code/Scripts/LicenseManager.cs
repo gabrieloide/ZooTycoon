@@ -13,6 +13,7 @@ public class LicenseManager : MonoBehaviour
     [SerializeField] private LicenseEventChannelSO onLicensePurchasedChannel;
 
     private readonly HashSet<string> purchasedIDs = new();
+    private Dictionary<string, BiomeDefinition> biomeDataDict;
 
     private void Awake()
     {
@@ -53,5 +54,36 @@ public class LicenseManager : MonoBehaviour
                         result.Add(biome);
         }
         return result;
+    }
+
+    public List<string> GetPurchasedIDs()
+    {
+        return new List<string>(purchasedIDs);
+    }
+
+    public void LoadPurchasedLicenses(List<string> ids)
+    {
+        purchasedIDs.Clear();
+        if (ids == null) return;
+        foreach (var id in ids)
+            purchasedIDs.Add(id);
+    }
+
+    public BiomeDefinition GetBiomeData(string biomeID)
+    {
+        if (biomeDataDict == null)
+        {
+            biomeDataDict = new Dictionary<string, BiomeDefinition>();
+            foreach (var license in allLicenses)
+            {
+                if (license == null) continue;
+                foreach (var biome in license.unlockedBiomes)
+                {
+                    if (biome != null && !biomeDataDict.ContainsKey(biome.biomeID))
+                        biomeDataDict.Add(biome.biomeID, biome);
+                }
+            }
+        }
+        return biomeDataDict.TryGetValue(biomeID, out var result) ? result : null;
     }
 }

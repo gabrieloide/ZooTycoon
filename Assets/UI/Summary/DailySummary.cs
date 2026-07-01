@@ -184,6 +184,6 @@ public class DailySummary : MonoBehaviour
     private void OnNextDayClicked()
     {
         if (screenSummary != null) screenSummary.style.display = DisplayStyle.None;
-        if (SleepManager.Instance != null) SleepManager.Instance.TrySleep();
+        if (SleepManager.Instance != null) SleepManager.Instance.ConfirmNextDay();
     }
 }

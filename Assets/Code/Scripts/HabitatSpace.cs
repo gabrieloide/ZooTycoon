@@ -24,9 +24,73 @@ public class HabitatSpace : MonoBehaviour
     public float generalAnnoyance;
     public CompatibilityMatrix globalMatrix;
 
+    [HideInInspector] public float totalBuildCost;
+    [HideInInspector] public int buildSession;
+
+    public float GetSellRefund(float staledRate)
+    {
+        float rate = buildSession == BuildController.CurrentSession ? 1f : staledRate;
+        float total = totalBuildCost * rate;
+        foreach (var animal in animals)
+            if (animal != null) total += animal.GetSellRefund(staledRate);
+        return total;
+    }
+
     private List<Animal> animals = new();
+    private float cachedNeighborTension;
+
+    private List<GameObject> fenceSegments = new();
+    private GameObject brokenFence;
+    private Quaternion brokenFenceOriginalRotation;
+    private Vector3 brokenFenceOriginalScale;
+    private Color brokenFenceOriginalColor;
 
     private void OnDisable() => habitatSet?.Remove(this);
+
+    public void SetFences(List<GameObject> fences)
+    {
+        fenceSegments = fences;
+    }
+
+    public bool HasEscapedAnimals()
+    {
+        foreach (var animal in animals)
+            if (animal != null && animal.hasEscaped) return true;
+        return false;
+    }
+
+    public void BreakFence()
+    {
+        if (brokenFence != null) return;
+
+        var candidates = new List<GameObject>();
+        foreach (var fence in fenceSegments)
+            if (fence != null) candidates.Add(fence);
+        if (candidates.Count == 0) return;
+
+        brokenFence = candidates[Random.Range(0, candidates.Count)];
+        var renderer = brokenFence.GetComponent<Renderer>();
+
+        brokenFenceOriginalRotation = brokenFence.transform.rotation;
+        brokenFenceOriginalScale = brokenFence.transform.localScale;
+        brokenFenceOriginalColor = renderer != null ? renderer.material.color : Color.red;
+
+        brokenFence.transform.rotation = brokenFenceOriginalRotation * Quaternion.Euler(0f, 0f, 75f);
+        brokenFence.transform.localScale = new Vector3(brokenFenceOriginalScale.x, brokenFenceOriginalScale.y * 0.4f, brokenFenceOriginalScale.z);
+        if (renderer != null) renderer.material.color = new Color(0.3f, 0.2f, 0.1f);
+    }
+
+    public void RepairFence()
+    {
+        if (brokenFence == null) return;
+
+        brokenFence.transform.rotation = brokenFenceOriginalRotation;
+        brokenFence.transform.localScale = brokenFenceOriginalScale;
+        var renderer = brokenFence.GetComponent<Renderer>();
+        if (renderer != null) renderer.material.color = brokenFenceOriginalColor;
+
+        brokenFence = null;
+    }
 
     public void AddAnimal(AnimalData animal)
     {
@@ -127,7 +191,28 @@ public class HabitatSpace : MonoBehaviour
             }
         }
 
+        totalTension += cachedNeighborTension;
+
         return totalTension;
+    }
+
+    public void RefreshNeighborTension()
+    {
+        cachedNeighborTension = 0f;
+        if (habitatSet == null || globalMatrix == null) return;
+        foreach (var other in habitatSet.Items)
+        {
+            if (other == this || other == null) continue;
+            if (!AreWithinRange(other, globalMatrix.neighborInfluenceRadius)) continue;
+            cachedNeighborTension += globalMatrix.GetBiomeTension(biome, other.biome);
+        }
+    }
+
+    private bool AreWithinRange(HabitatSpace other, int maxGap)
+    {
+        int gapX = Mathf.Max(0, Mathf.Max(xMin - other.xMax - 1, other.xMin - xMax - 1));
+        int gapY = Mathf.Max(0, Mathf.Max(yMin - other.yMax - 1, other.yMin - yMax - 1));
+        return gapX <= maxGap && gapY <= maxGap;
     }
 
     public void ResetAnimalStress()
@@ -144,6 +229,19 @@ public class HabitatSpace : MonoBehaviour
     }
 
     public System.Collections.Generic.IReadOnlyList<Animal> GetAnimals() => animals;
+
+    public Vector2? GetNearestViewingCell()
+    {
+        var candidates = PathManager.GetViewingCells(xMin, xMax, yMin, yMax);
+        if (candidates.Count == 0) return null;
+        return candidates[Random.Range(0, candidates.Count)];
+    }
+
+    public Vector3 GetWorldCenter()
+    {
+        float cs = GridCreator.Instance != null ? GridCreator.Instance.cellSize : 1f;
+        return new Vector3((xMin + xMax + 1) * 0.5f * cs, 0f, (yMin + yMax + 1) * 0.5f * cs);
+    }
 
     private void Update()
     {

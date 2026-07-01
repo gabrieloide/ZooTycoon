@@ -10,8 +10,13 @@ namespace ZooTycoon.Data
         public int maxVisitors = 30;
         public int visitorsPerAnimal = 2;
 
+        [Header("NPC Pool")]
+        public int maxNpcVisitors = 8;
+
         [Header("Behavior")]
         public float satisfactionDecayRate = 1f;
         public float fleeRadius = 5f;
+        public float fleeSpeedMultiplier = 1.6f;
+        public float fleeDuration = 3f;
     }
 }

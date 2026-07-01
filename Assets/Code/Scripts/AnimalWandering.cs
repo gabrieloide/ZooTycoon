@@ -19,20 +19,72 @@ public class AnimalWandering : MonoBehaviour
                 continue;
             }
 
-            Vector3 target = PickTarget();
-            yield return MoveTo(target);
-            yield return new WaitForSeconds(Random.Range(animal.data.wanderPauseMin, animal.data.wanderPauseMax));
+            if (animal.hasEscaped)
+            {
+                yield return EscapedStep();
+                continue;
+            }
+
+            float speed = animal.data.wanderSpeed * Random.Range(1f - animal.data.wanderSpeedVariance, 1f + animal.data.wanderSpeedVariance);
+            yield return MoveTo(PickHabitatTarget(), speed);
+            yield return IdleLook(Random.Range(animal.data.wanderPauseMin, animal.data.wanderPauseMax));
         }
     }
 
-    private Vector3 PickTarget()
+    private IEnumerator EscapedStep()
     {
-        if (animal.hasEscaped)
+        VisitorNPC target = FindNearestVisitor();
+        if (target == null)
         {
-            Vector2 offset = Random.insideUnitCircle * 5f;
-            return new Vector3(transform.position.x + offset.x, transform.position.y, transform.position.z + offset.y);
+            yield return MoveTo(PickFreeRoamTarget(), animal.data.wanderSpeed);
+            yield return new WaitForSeconds(Random.Range(animal.data.wanderPauseMin, animal.data.wanderPauseMax));
+            yield break;
         }
 
+        yield return Chase(target);
+    }
+
+    private VisitorNPC FindNearestVisitor()
+    {
+        VisitorNPC nearest = null;
+        float nearestSqr = animal.data.chaseDetectionRadius * animal.data.chaseDetectionRadius;
+
+        foreach (var visitor in VisitorNPC.ActiveVisitors)
+        {
+            if (visitor == null) continue;
+            float sqr = (visitor.transform.position - transform.position).sqrMagnitude;
+            if (sqr <= nearestSqr)
+            {
+                nearestSqr = sqr;
+                nearest = visitor;
+            }
+        }
+
+        return nearest;
+    }
+
+    private IEnumerator Chase(VisitorNPC target)
+    {
+        float giveUpRadius = animal.data.chaseDetectionRadius * 1.5f;
+
+        while (animal.hasEscaped && target != null)
+        {
+            Vector3 flat = new Vector3(transform.position.x, 0f, transform.position.z);
+            Vector3 targetFlat = new Vector3(target.transform.position.x, 0f, target.transform.position.z);
+            float dist = Vector3.Distance(flat, targetFlat);
+
+            if (dist > giveUpRadius) yield break;
+
+            Vector3 dir = targetFlat - flat;
+            dir.Normalize();
+            transform.position += dir * animal.data.chaseSpeed * Time.deltaTime;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * animal.data.rotationSpeed);
+            yield return null;
+        }
+    }
+
+    private Vector3 PickHabitatTarget()
+    {
         if (animal.habitat == null) return transform.position;
 
         float cellSize = GridCreator.Instance != null ? GridCreator.Instance.cellSize : 1f;
@@ -46,11 +98,14 @@ public class AnimalWandering : MonoBehaviour
         return new Vector3(Random.Range(minX, maxX), transform.position.y, Random.Range(minZ, maxZ));
     }
 
-    private IEnumerator MoveTo(Vector3 target)
+    private Vector3 PickFreeRoamTarget()
     {
-        if (animal == null || animal.data == null) yield break;
+        Vector2 offset = Random.insideUnitCircle * animal.data.chaseDetectionRadius;
+        return new Vector3(transform.position.x + offset.x, transform.position.y, transform.position.z + offset.y);
+    }
 
-        float speed = animal.data.wanderSpeed;
+    private IEnumerator MoveTo(Vector3 target, float speed)
+    {
         target.y = transform.position.y;
 
         while (Vector3.Distance(
@@ -62,7 +117,21 @@ public class AnimalWandering : MonoBehaviour
             dir.Normalize();
             transform.position += dir * speed * Time.deltaTime;
             if (dir.sqrMagnitude > 0.001f)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 5f);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * animal.data.rotationSpeed);
+            yield return null;
+        }
+    }
+
+    private IEnumerator IdleLook(float duration)
+    {
+        Quaternion startRot = transform.rotation;
+        Quaternion lookRot = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            transform.rotation = Quaternion.Slerp(startRot, lookRot, Mathf.Clamp01(elapsed / duration));
             yield return null;
         }
     }

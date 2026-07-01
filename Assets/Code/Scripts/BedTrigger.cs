@@ -28,7 +28,7 @@ public class BedTrigger : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
         playerInRange = true;
-        InteractPrompt.Instance?.Show("Sleep");
+        InteractPrompt.Instance?.Show("Sleep", transform);
     }
 
     private void OnTriggerExit(Collider other)

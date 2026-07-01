@@ -9,9 +9,20 @@ public class SleepManager : MonoBehaviour
 
     [Header("Time Channels")]
     [SerializeField] private VoidEventChannelSO onNewDayStartChannel;
+    [SerializeField] private VoidEventChannelSO onWorkDayEndChannel;
     [SerializeField] private VoidEventChannelSO onDayEndedChannel;
 
+    [Header("Demo")]
+    [SerializeField] private int demoDayLimit = 3;
+    [SerializeField] private VoidEventChannelSO onDemoEndedChannel;
+
     private bool voluntarySleptToday;
+    private bool canSleep;
+    private bool demoEnded;
+    private bool pendingSleep;
+    private bool pendingSleepForced;
+
+    public bool CanSleep => canSleep;
 
     private void Awake()
     {
@@ -22,21 +33,32 @@ public class SleepManager : MonoBehaviour
     private void OnEnable()
     {
         onNewDayStartChannel?.Subscribe(OnNewDayStarted);
+        onWorkDayEndChannel?.Subscribe(OnWorkDayEnded);
         onDayEndedChannel?.Subscribe(HandleAutoSleep);
     }
 
     private void OnDisable()
     {
         onNewDayStartChannel?.Unsubscribe(OnNewDayStarted);
+        onWorkDayEndChannel?.Unsubscribe(OnWorkDayEnded);
         onDayEndedChannel?.Unsubscribe(HandleAutoSleep);
     }
 
     public void TrySleep()
     {
+        if (!canSleep) return;
         if (voluntarySleptToday) return;
+        if (demoEnded) return;
+        if (pendingSleep) return;
         voluntarySleptToday = true;
-        ResetAllAnimalStress();
-        TimeManager.Instance.ForceNewDay(false);
+        pendingSleep = true;
+        pendingSleepForced = false;
+        EconomyManager.Instance?.PublishDailySummary();
+    }
+
+    private void OnWorkDayEnded()
+    {
+        canSleep = true;
     }
 
     private void HandleAutoSleep()
@@ -46,13 +68,48 @@ public class SleepManager : MonoBehaviour
             voluntarySleptToday = false;
             return;
         }
-        ApplyStressPenalty();
-        TimeManager.Instance.ForceNewDay(true);
+        if (demoEnded) return;
+        if (pendingSleep) return;
+        pendingSleep = true;
+        pendingSleepForced = true;
+        EconomyManager.Instance?.PublishDailySummary();
+    }
+
+    public void ConfirmNextDay()
+    {
+        if (!pendingSleep) return;
+        if (demoEnded) return;
+        pendingSleep = false;
+
+        if (pendingSleepForced) ApplyStressPenalty();
+        else ResetAllAnimalStress();
+
+        if (IsFinalDemoDay())
+        {
+            EndDemo();
+            return;
+        }
+
+        TimeManager.Instance.ForceNewDay(pendingSleepForced);
+        SaveManager.Instance.Save();
+    }
+
+    private bool IsFinalDemoDay()
+    {
+        return TimeManager.Instance != null && TimeManager.Instance.GetCurrentDay() >= demoDayLimit - 1;
+    }
+
+    private void EndDemo()
+    {
+        demoEnded = true;
+        Time.timeScale = 0f;
+        onDemoEndedChannel?.Raise();
     }
 
     private void OnNewDayStarted()
     {
         voluntarySleptToday = false;
+        canSleep = false;
     }
 
     private void ResetAllAnimalStress()

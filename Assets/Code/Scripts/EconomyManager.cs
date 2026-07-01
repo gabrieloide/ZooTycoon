@@ -39,6 +39,7 @@ namespace ZooTycoon.Core
         private float dailyIncome;
         private float dailyBuildExpenses;
         private float dailyDisasterLosses;
+        private DailySummaryData pendingSummary;
 
         private void Awake()
         {
@@ -69,6 +70,14 @@ namespace ZooTycoon.Core
 
         public bool CanAfford(float cost) => Capital >= cost;
 
+        public void LoadState(float capital, float loanDebt)
+        {
+            Capital = capital;
+            LoanDebt = loanDebt;
+            BroadcastCapital();
+            BroadcastLoanDebt();
+        }
+
         public void TakeLoan(float amount)
         {
             if (amount <= 0f) return;
@@ -93,6 +102,8 @@ namespace ZooTycoon.Core
         }
 
         public void RegisterDisasterLoss(float amount) => dailyDisasterLosses += amount;
+
+        public void PublishDailySummary() => onDailySummaryReadyChannel?.Raise(pendingSummary);
 
         private void BroadcastCapital()
         {
@@ -131,7 +142,7 @@ namespace ZooTycoon.Core
 
             float pureConstruction = dailyBuildExpenses - maintenance - dailyDisasterLosses;
 
-            var summary = new DailySummaryData
+            pendingSummary = new DailySummaryData
             {
                 income = dailyIncome,
                 buildExpenses = Mathf.Max(0f, pureConstruction),
@@ -139,8 +150,6 @@ namespace ZooTycoon.Core
                 disasterLosses = dailyDisasterLosses,
                 net = dailyIncome - dailyBuildExpenses
             };
-
-            onDailySummaryReadyChannel?.Raise(summary);
         }
 
         private float CalculateMaintenanceCost()

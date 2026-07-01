@@ -1,12 +1,19 @@
-using UnityEngine;
+﻿using UnityEngine;
 using ZooTycoon.Core;
 
 public class TimeManager : MonoBehaviour
 {
     public static TimeManager Instance { get; private set; }
 
+    public int StartWorkHour => startWorkHour;
+    public int StartWorkMinute => startWorkMinute;
+    public int EndWorkHour => endWorkHour;
+    public int EndWorkMinute => endWorkMinute;
+    public int EndDayHour => endDayHour;
+    public int EndDayMinute => endDayMinute;
+
     [Header("Day Duration")]
-    [SerializeField] private float dayDurationInMinutes = 5f;
+    [SerializeField] private float dayDurationInMinutes = 12f;
 
     [Header("Complete Day")]
     [SerializeField] private int startDayHour = 6;
@@ -67,6 +74,13 @@ public class TimeManager : MonoBehaviour
         int now = startTotal + elapsed;
 
         return new Vector2Int((now / 60) % 24, now % 60);
+    }
+
+    public void LoadState(int day)
+    {
+        currentDay = day;
+        currentTime = 0f;
+        ResetEventFlags();
     }
 
     public void ForceNewDay(bool skipToWorkStart = false)

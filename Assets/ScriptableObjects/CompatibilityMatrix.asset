@@ -13,9 +13,74 @@ MonoBehaviour:
   m_Name: CompatibilityMatrix
   m_EditorClassIdentifier: 
   conflicts:
+  - familyA: 0
+    familyB: 3
+    tensionMultiplier: 90
+  - familyA: 0
+    familyB: 2
+    tensionMultiplier: 80
   - familyA: 1
-    familyB: 0
-    tensionMultiplier: 4.6
+    familyB: 3
+    tensionMultiplier: 70
+  - familyA: 0
+    familyB: 4
+    tensionMultiplier: 70
+  - familyA: 0
+    familyB: 6
+    tensionMultiplier: 60
+  - familyA: 5
+    familyB: 3
+    tensionMultiplier: 55
   - familyA: 1
-    familyB: 0
-    tensionMultiplier: 4.6
+    familyB: 6
+    tensionMultiplier: 50
+  - familyA: 5
+    familyB: 6
+    tensionMultiplier: 45
+  - familyA: 0
+    familyB: 7
+    tensionMultiplier: 40
+  - familyA: 1
+    familyB: 8
+    tensionMultiplier: 35
+  - familyA: 4
+    familyB: 4
+    tensionMultiplier: 30
+  - familyA: 2
+    familyB: 2
+    tensionMultiplier: 10
+  overcrowdingPenaltyPerTile: 15
+  specificEnemyTension: 100
+  minHabitatDistance: 2
+  neighborInfluenceRadius: 4
+  biomeConflicts:
+  - biomeA: {fileID: 11400000, guid: 0b5e94fa8e5756f4eada9a60527d26a3, type: 2}
+    biomeB: {fileID: 11400000, guid: 0cc8f2c1cd8362c46abde893a4f80bbd, type: 2}
+    neighborTension: 120
+  - biomeA: {fileID: 11400000, guid: 0b5e94fa8e5756f4eada9a60527d26a3, type: 2}
+    biomeB: {fileID: 11400000, guid: 4f5356f73fa3ec34fb23212afca2b1dd, type: 2}
+    neighborTension: 90
+  - biomeA: {fileID: 11400000, guid: 0cc8f2c1cd8362c46abde893a4f80bbd, type: 2}
+    biomeB: {fileID: 11400000, guid: e0be8a8e1d2221142a9d0664587345da, type: 2}
+    neighborTension: 70
+  - biomeA: {fileID: 11400000, guid: 0cc8f2c1cd8362c46abde893a4f80bbd, type: 2}
+    biomeB: {fileID: 11400000, guid: 4f5356f73fa3ec34fb23212afca2b1dd, type: 2}
+    neighborTension: 50
+  - biomeA: {fileID: 11400000, guid: 0b5e94fa8e5756f4eada9a60527d26a3, type: 2}
+    biomeB: {fileID: 11400000, guid: e592dab59fe1b9546a4b70d3f3c50aa7, type: 2}
+    neighborTension: 40
+  - biomeA: {fileID: 11400000, guid: 0b5e94fa8e5756f4eada9a60527d26a3, type: 2}
+    biomeB: {fileID: 11400000, guid: e0be8a8e1d2221142a9d0664587345da, type: 2}
+    neighborTension: 35
+  - biomeA: {fileID: 11400000, guid: e592dab59fe1b9546a4b70d3f3c50aa7, type: 2}
+    biomeB: {fileID: 11400000, guid: 0cc8f2c1cd8362c46abde893a4f80bbd, type: 2}
+    neighborTension: 30
+  - biomeA: {fileID: 11400000, guid: e592dab59fe1b9546a4b70d3f3c50aa7, type: 2}
+    biomeB: {fileID: 11400000, guid: 4f5356f73fa3ec34fb23212afca2b1dd, type: 2}
+    neighborTension: 25
+  - biomeA: {fileID: 11400000, guid: 4f5356f73fa3ec34fb23212afca2b1dd, type: 2}
+    biomeB: {fileID: 11400000, guid: e0be8a8e1d2221142a9d0664587345da, type: 2}
+    neighborTension: 15
+  - biomeA: {fileID: 11400000, guid: e592dab59fe1b9546a4b70d3f3c50aa7, type: 2}
+    biomeB: {fileID: 11400000, guid: e0be8a8e1d2221142a9d0664587345da, type: 2}
+    neighborTension: 10

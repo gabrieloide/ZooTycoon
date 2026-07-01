@@ -5,7 +5,7 @@ using ZooTycoon.Core;
 
 public class Interactable : MonoBehaviour
 {
-    [SerializeField] private string label = "Interact";
+    [SerializeField] private string label = "Interact [E]";
     [SerializeField] private UnityEvent onInteract;
     [SerializeField] private UnityEvent onExitRange;
 
@@ -32,7 +32,7 @@ public class Interactable : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
         playerInRange = true;
-        InteractPrompt.Instance?.Show(label);
+        InteractPrompt.Instance?.Show(label, transform);
     }
 
     private void OnTriggerExit(Collider other)

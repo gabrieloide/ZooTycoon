@@ -31,6 +31,12 @@ namespace ZooTycoon.Data
         public float wanderSpeed = 1.5f;
         public float wanderPauseMin = 1f;
         public float wanderPauseMax = 4f;
+        public float wanderSpeedVariance = 0.2f;
+        public float rotationSpeed = 5f;
+
+        [Header("Chase (Escaped)")]
+        public float chaseSpeed = 3.5f;
+        public float chaseDetectionRadius = 8f;
 
         [Header("Interaction")]
         public float interactionRadius = 2f;

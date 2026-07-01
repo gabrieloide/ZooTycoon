@@ -31,6 +31,11 @@ public static class HabitatManager
 
     public static IReadOnlyCollection<HabitatSpace> GetAllHabitats() => habitats.Values;
 
+    public static void Clear()
+    {
+        habitats.Clear();
+    }
+
     public static HabitatSpace GetHabitatAtPosition(Vector2 gridPos)
     {
         foreach (var habitat in habitats.Values)
@@ -40,6 +45,17 @@ public static class HabitatManager
                 return habitat;
         }
         return null;
+    }
+
+    public static bool IsTooCloseToAnyHabitat(int minX, int maxX, int minY, int maxY, int minDistance)
+    {
+        foreach (var h in habitats.Values)
+        {
+            int gapX = Mathf.Max(0, Mathf.Max(minX - h.xMax - 1, h.xMin - maxX - 1));
+            int gapY = Mathf.Max(0, Mathf.Max(minY - h.yMax - 1, h.yMin - maxY - 1));
+            if (gapX < minDistance && gapY < minDistance) return true;
+        }
+        return false;
     }
 
 }

@@ -1,6 +1,6 @@
-using System.Collections;
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InteractPrompt : MonoBehaviour
 {
@@ -8,10 +8,11 @@ public class InteractPrompt : MonoBehaviour
 
     [SerializeField] private GameObject promptRoot;
     [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private Text actionLabel;
+    [SerializeField] private TMP_Text actionLabel;
     [SerializeField] private float animDuration = 0.18f;
+    [SerializeField] private Vector3 offset = new Vector3(0f, 2.5f, 0f);
 
-    private Coroutine animCoroutine;
+    private Transform currentTarget;
 
     private void Awake()
     {
@@ -25,48 +26,49 @@ public class InteractPrompt : MonoBehaviour
             canvasGroup.blocksRaycasts = false;
         }
         if (promptRoot != null)
+        {
+            promptRoot.transform.localScale = Vector3.one * 0.8f;
             promptRoot.SetActive(false);
+        }
     }
 
-    public void Show(string text)
+    private void LateUpdate()
     {
+        if (promptRoot == null || !promptRoot.activeSelf || Camera.main == null) return;
+
+        if (currentTarget != null)
+            promptRoot.transform.position = currentTarget.position + offset;
+
+        promptRoot.transform.rotation = Camera.main.transform.rotation;
+    }
+
+    public void Show(string text, Transform target)
+    {
+        currentTarget = target;
+
         if (actionLabel != null) actionLabel.text = text;
-        if (promptRoot != null) promptRoot.SetActive(true);
-        if (animCoroutine != null) StopCoroutine(animCoroutine);
-        animCoroutine = StartCoroutine(AnimRoutine(true));
+        if (promptRoot == null || canvasGroup == null) return;
+
+        promptRoot.transform.position = target.position + offset;
+        promptRoot.SetActive(true);
+
+        DOTween.Kill(canvasGroup);
+        DOTween.Kill(promptRoot.transform);
+
+        canvasGroup.DOFade(1f, animDuration).SetEase(Ease.OutQuad);
+        promptRoot.transform.DOScale(Vector3.one, animDuration).SetEase(Ease.OutBack);
     }
 
     public void Hide()
     {
-        if (animCoroutine != null) StopCoroutine(animCoroutine);
-        animCoroutine = StartCoroutine(AnimRoutine(false));
-    }
+        currentTarget = null;
+        if (promptRoot == null || canvasGroup == null) return;
 
-    private IEnumerator AnimRoutine(bool show)
-    {
-        if (canvasGroup == null) yield break;
+        DOTween.Kill(canvasGroup);
+        DOTween.Kill(promptRoot.transform);
 
-        float elapsed = 0f;
-        float startAlpha = canvasGroup.alpha;
-        float targetAlpha = show ? 1f : 0f;
-        Vector3 startScale = promptRoot != null ? promptRoot.transform.localScale : Vector3.one;
-        Vector3 targetScale = show ? Vector3.one : Vector3.one * 0.8f;
-
-        while (elapsed < animDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / animDuration);
-            canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
-            if (promptRoot != null)
-                promptRoot.transform.localScale = Vector3.Lerp(startScale, targetScale, t);
-            yield return null;
-        }
-
-        canvasGroup.alpha = targetAlpha;
-        if (promptRoot != null)
-            promptRoot.transform.localScale = targetScale;
-
-        if (!show && promptRoot != null)
-            promptRoot.SetActive(false);
+        canvasGroup.DOFade(0f, animDuration).SetEase(Ease.InQuad);
+        promptRoot.transform.DOScale(Vector3.one * 0.8f, animDuration).SetEase(Ease.InQuad)
+            .OnComplete(() => promptRoot.SetActive(false));
     }
 }

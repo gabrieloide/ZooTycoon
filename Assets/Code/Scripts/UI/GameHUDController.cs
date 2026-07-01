@@ -17,6 +17,7 @@ namespace ZooTycoon.UI
         private Label lblMoney;
         private Label lblGridSize;
         private Label lblVisitors;
+        private VisualElement sellModeIndicator;
         private VisualElement shopPanel;
         private Button btnTabHabitats;
         private Button btnTabAnimals;
@@ -29,7 +30,15 @@ namespace ZooTycoon.UI
         private Label tooltipLblDesc;
 
         [Header("Time Channels")]
+        [SerializeField] private VoidEventChannelSO onNewDayStartChannel;
         [SerializeField] private VoidEventChannelSO onDayEndedChannel;
+
+        [Header("Time Colors")]
+        [SerializeField] private int urgentWindowMinutes = 60;
+        [SerializeField] private Color planningColor = new Color(0.4f, 0.7f, 1f);
+        [SerializeField] private Color openColor = new Color(0.4f, 0.85f, 0.4f);
+        [SerializeField] private Color closedColor = new Color(1f, 0.65f, 0.2f);
+        [SerializeField] private Color urgentColor = new Color(1f, 0.25f, 0.25f);
 
         [Header("Event Channels In")]
         [SerializeField] private FloatEventChannelSO onCapitalChangedChannel;
@@ -68,13 +77,51 @@ namespace ZooTycoon.UI
             shopPanel.RegisterCallback<PointerLeaveEvent>(_ => ShopDetector.IsOverShop = false, TrickleDown.TrickleDown);
 
             SetupTooltip(uiRoot);
+            SetupSellModeIndicator(uiRoot);
 
+            onNewDayStartChannel?.Subscribe(UpdateDayDisplay);
             onDayEndedChannel?.Subscribe(UpdateDayDisplay);
             onCapitalChangedChannel?.Subscribe(UpdateMoneyDisplay);
             onVisitorCountChangedChannel?.Subscribe(UpdateVisitorDisplay);
             onLicensePurchasedChannel?.Subscribe(OnLicensePurchasedHandler);
 
             buildController = FindAnyObjectByType<BuildController>();
+        }
+
+        private void SetupSellModeIndicator(VisualElement root)
+        {
+            var container = new VisualElement();
+            container.style.position = Position.Absolute;
+            container.style.top = 14f;
+            container.style.left = 0;
+            container.style.right = 0;
+            container.style.flexDirection = FlexDirection.Row;
+            container.style.justifyContent = Justify.Center;
+            container.pickingMode = PickingMode.Ignore;
+
+            sellModeIndicator = new VisualElement();
+            sellModeIndicator.style.backgroundColor = new Color(0.55f, 0.05f, 0.05f, 0.92f);
+            sellModeIndicator.style.borderTopLeftRadius = 5f;
+            sellModeIndicator.style.borderTopRightRadius = 5f;
+            sellModeIndicator.style.borderBottomLeftRadius = 5f;
+            sellModeIndicator.style.borderBottomRightRadius = 5f;
+            sellModeIndicator.style.paddingTop = 5f;
+            sellModeIndicator.style.paddingBottom = 5f;
+            sellModeIndicator.style.paddingLeft = 14f;
+            sellModeIndicator.style.paddingRight = 14f;
+            sellModeIndicator.style.display = DisplayStyle.None;
+            sellModeIndicator.pickingMode = PickingMode.Ignore;
+
+            var lbl = new Label("DELETE MODE  [E]");
+            lbl.style.color = new Color(1f, 0.4f, 0.4f, 1f);
+            lbl.style.fontSize = 13f;
+            lbl.style.unityFontStyleAndWeight = FontStyle.Bold;
+            lbl.style.unityTextAlign = TextAnchor.MiddleCenter;
+            lbl.pickingMode = PickingMode.Ignore;
+
+            sellModeIndicator.Add(lbl);
+            container.Add(sellModeIndicator);
+            root.Add(container);
         }
 
         private void SetupTooltip(VisualElement root)
@@ -153,6 +200,7 @@ namespace ZooTycoon.UI
 
         private void OnDisable()
         {
+            onNewDayStartChannel?.Unsubscribe(UpdateDayDisplay);
             onDayEndedChannel?.Unsubscribe(UpdateDayDisplay);
             onCapitalChangedChannel?.Unsubscribe(UpdateMoneyDisplay);
             onVisitorCountChangedChannel?.Unsubscribe(UpdateVisitorDisplay);
@@ -175,13 +223,22 @@ namespace ZooTycoon.UI
             {
                 Vector2Int t = TimeManager.Instance.GetCurrentTimeInDay();
                 lblTime.text = string.Format("{0:00}:{1:00}", t.x, t.y);
+                UpdateTimeColor(t);
             }
 
-            if (GameManager.Instance != null && GameManager.Instance.isBuildMode && buildController != null && lblGridSize != null)
+            bool inBuildMode = GameManager.Instance != null && GameManager.Instance.isBuildMode;
+
+            if (inBuildMode && buildController != null && lblGridSize != null)
             {
                 var size = buildController.GetSizeGrid(out bool isCorrect);
                 lblGridSize.text = $"{size.x} x | {size.y} y";
                 lblGridSize.style.color = isCorrect ? Color.green : Color.red;
+            }
+
+            if (sellModeIndicator != null)
+            {
+                bool selling = inBuildMode && buildController != null && buildController.IsSellMode;
+                sellModeIndicator.style.display = selling ? DisplayStyle.Flex : DisplayStyle.None;
             }
         }
 
@@ -189,6 +246,34 @@ namespace ZooTycoon.UI
         {
             if (TimeManager.Instance != null && lblDay != null)
                 lblDay.text = $"Day: {TimeManager.Instance.GetCurrentDay()}";
+        }
+
+        private void UpdateTimeColor(Vector2Int t)
+        {
+            var tm = TimeManager.Instance;
+            int totalMinutes = t.x * 60 + t.y;
+            int workStart = tm.StartWorkHour * 60 + tm.StartWorkMinute;
+            int workEnd = tm.EndWorkHour * 60 + tm.EndWorkMinute;
+            int dayEnd = tm.EndDayHour * 60 + tm.EndDayMinute;
+            int urgentStart = dayEnd - urgentWindowMinutes;
+
+            if (totalMinutes >= urgentStart && totalMinutes < dayEnd)
+            {
+                float pulse = Mathf.PingPong(Time.unscaledTime * 2f, 1f);
+                lblTime.style.color = Color.Lerp(urgentColor, Color.white, pulse);
+            }
+            else if (totalMinutes >= workEnd)
+            {
+                lblTime.style.color = closedColor;
+            }
+            else if (totalMinutes < workStart)
+            {
+                lblTime.style.color = planningColor;
+            }
+            else
+            {
+                lblTime.style.color = openColor;
+            }
         }
 
         private void UpdateMoneyDisplay(float capital)
@@ -357,11 +442,23 @@ namespace ZooTycoon.UI
             ResetTabStyles();
             SetActiveTabStyle(btnTabDecorations);
 
-            var label = new Label("Decorations coming soon...");
-            label.style.color = Color.gray;
-            label.style.alignSelf = Align.Center;
-            label.style.marginTop = 20;
-            shopContent.Add(label);
+            bool pathActive = buildController != null && buildController.IsPathMode;
+            var pathBtn = CreateShopButton("Paths", "$10/tile", "Paint walkable paths for visitors. Hold and drag to place.");
+            if (pathActive)
+                pathBtn.style.backgroundColor = new Color(0.2f, 0.6f, 0.2f);
+            pathBtn.clicked += OnPathSelected;
+            shopContent.Add(pathBtn);
+
+        }
+
+        private void OnPathSelected()
+        {
+            if (buildController == null) return;
+            if (buildController.IsPathMode)
+                buildController.ClearSelection();
+            else
+                buildController.SelectPath();
+            OpenDecorationsTab();
         }
 
         private void OpenLicensesTab()
