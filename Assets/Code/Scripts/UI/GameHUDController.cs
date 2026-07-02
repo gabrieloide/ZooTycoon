@@ -245,7 +245,7 @@ namespace ZooTycoon.UI
         private void UpdateDayDisplay()
         {
             if (TimeManager.Instance != null && lblDay != null)
-                lblDay.text = $"Day: {TimeManager.Instance.GetCurrentDay()}";
+                lblDay.text = $"Day: {TimeManager.Instance.GetCurrentDay() + 1}";
         }
 
         private void UpdateTimeColor(Vector2Int t)

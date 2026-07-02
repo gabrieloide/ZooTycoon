@@ -9,9 +9,11 @@ public class VisitorNPC : MonoBehaviour
     [SerializeField] private float viewDurationMin = 3f;
     [SerializeField] private float viewDurationMax = 7f;
     [SerializeField] private float rotationSpeed = 5f;
+    [SerializeField] private float pathOffsetRange = 0.3f;
 
     private VisitorConfig visitorConfig;
     private Vector2 currentCell;
+    private Vector2 pathOffset;
     private bool fleeRequested;
     private Animal fleeThreat;
 
@@ -23,6 +25,7 @@ public class VisitorNPC : MonoBehaviour
     private void OnEnable()
     {
         activeVisitors.Add(this);
+        pathOffset = Random.insideUnitCircle * pathOffsetRange;
         StartCoroutine(WanderLoop());
     }
 
@@ -155,6 +158,8 @@ public class VisitorNPC : MonoBehaviour
         {
             if (fleeRequested) yield break;
             Vector3 target = gridCreator.GetCellWorldPosition(cell);
+            target.x += pathOffset.x;
+            target.z += pathOffset.y;
             target.y = transform.position.y;
             yield return MoveTo(target);
         }

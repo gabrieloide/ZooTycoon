@@ -96,22 +96,67 @@ public static class PathManager
     public static List<Vector2> GetViewingCells(int xMin, int xMax, int yMin, int yMax)
     {
         var result = new List<Vector2>();
+        foreach (var cell in GetPerimeterCells(xMin, xMax, yMin, yMax))
+            if (cellData.ContainsKey(cell)) result.Add(cell);
+        return result;
+    }
+
+    public static List<Vector2> GetPerimeterCells(int xMin, int xMax, int yMin, int yMax)
+    {
+        var result = new List<Vector2>();
         for (int x = xMin; x <= xMax; x++)
         {
-            TryAdd(result, new Vector2(x, yMin - 1));
-            TryAdd(result, new Vector2(x, yMax + 1));
+            result.Add(new Vector2(x, yMin - 1));
+            result.Add(new Vector2(x, yMax + 1));
         }
         for (int y = yMin; y <= yMax; y++)
         {
-            TryAdd(result, new Vector2(xMin - 1, y));
-            TryAdd(result, new Vector2(xMax + 1, y));
+            result.Add(new Vector2(xMin - 1, y));
+            result.Add(new Vector2(xMax + 1, y));
         }
         return result;
     }
 
-    private static void TryAdd(List<Vector2> list, Vector2 cell)
+    public static List<Vector2> FindConnectorRoute(IReadOnlyList<Vector2> sources, System.Func<Vector2, bool> isBlocked, int gridWidth, int gridHeight, Vector2? entranceCell)
     {
-        if (cellData.ContainsKey(cell)) list.Add(cell);
+        bool IsTarget(Vector2 cell) => cellData.ContainsKey(cell) || cell == entranceCell;
+
+        var visited = new HashSet<Vector2>();
+        var prev = new Dictionary<Vector2, Vector2>();
+        var queue = new Queue<Vector2>();
+
+        foreach (var source in sources)
+        {
+            if (isBlocked(source) || !visited.Add(source)) continue;
+            if (IsTarget(source)) return new List<Vector2> { source };
+            queue.Enqueue(source);
+        }
+
+        var dirs = new[] { Vector2.right, Vector2.left, Vector2.up, Vector2.down };
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            foreach (var dir in dirs)
+            {
+                var next = current + dir;
+                if (next.x < 0 || next.y < 0 || next.x >= gridWidth || next.y >= gridHeight) continue;
+                if (!visited.Add(next) || isBlocked(next)) continue;
+                prev[next] = current;
+
+                if (IsTarget(next))
+                {
+                    var path = new List<Vector2>();
+                    var node = next;
+                    while (prev.ContainsKey(node)) { path.Add(node); node = prev[node]; }
+                    path.Add(node);
+                    path.Reverse();
+                    return path;
+                }
+                queue.Enqueue(next);
+            }
+        }
+
+        return null;
     }
 
     private static List<Vector2> GetNeighbors(Vector2 cell)

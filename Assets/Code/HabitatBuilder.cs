@@ -8,6 +8,7 @@ public class HabitatBuilder : MonoBehaviour
 {
     [SerializeField] private CompatibilityMatrix globalMatrix;
     [SerializeField] private HabitatRuntimeSet habitatSet;
+    [SerializeField] private PathConfig pathConfig;
 
     public HabitatSpace RebuildHabitat(HabitatSaveData data, BiomeDefinition biome)
     {
@@ -96,6 +97,36 @@ public class HabitatBuilder : MonoBehaviour
             if (fence != null) fences.Add(fence);
         }
         habitatData.SetFences(fences);
+
+        BuildPathConnector(minX, maxX, minY, maxY);
+    }
+
+    private void BuildPathConnector(int minX, int maxX, int minY, int maxY)
+    {
+        var gridCreator = GridCreator.Instance;
+        if (gridCreator == null) return;
+
+        var candidates = new List<Vector2>();
+        foreach (var cell in PathManager.GetPerimeterCells(minX, maxX, minY, maxY))
+            if (gridCreator.IsInBounds(cell) && !gridCreator.IsGridOccupied(cell))
+                candidates.Add(cell);
+        if (candidates.Count == 0) return;
+
+        Vector2? entranceCell = VisitorSpawner.Instance != null && VisitorSpawner.Instance.SpawnPoint != null
+            ? gridCreator.WorldToGridPosition(VisitorSpawner.Instance.SpawnPoint.position)
+            : (Vector2?)null;
+
+        var route = PathManager.FindConnectorRoute(candidates, gridCreator.IsGridOccupied, gridCreator.width, gridCreator.height, entranceCell);
+        if (route == null || PathBuilder.Instance == null) return;
+
+        float costPerTile = pathConfig != null ? pathConfig.costPerTile : 10f;
+        foreach (var cell in route)
+        {
+            if (PathManager.Has(cell)) continue;
+            if (EconomyManager.Instance == null || !EconomyManager.Instance.CanAfford(costPerTile)) break;
+            EconomyManager.Instance.Spend(costPerTile);
+            PathBuilder.Instance.RebuildTile(cell, costPerTile, BuildController.CurrentSession);
+        }
     }
 
     private List<Vector2> GetCellsInRect(Vector2 start, Vector2 end)

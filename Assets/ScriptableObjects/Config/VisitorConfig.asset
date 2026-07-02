@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: VisitorConfig
   m_EditorClassIdentifier: 
   spawnInterval: 10
-  maxVisitors: 30
+  maxVisitors: 120
+  visitorsPerAnimal: 7
+  maxNpcVisitors: 65
   satisfactionDecayRate: 1
   fleeRadius: 5
+  fleeSpeedMultiplier: 1.6
+  fleeDuration: 3

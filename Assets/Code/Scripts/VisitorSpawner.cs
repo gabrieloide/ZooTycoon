@@ -12,6 +12,8 @@ public class VisitorSpawner : MonoBehaviour
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private VisitorConfig visitorConfig;
 
+    public Transform SpawnPoint => spawnPoint;
+
     [Header("Event Channels")]
     [SerializeField] private VoidEventChannelSO onWorkDayEndChannel;
     [SerializeField] private IntEventChannelSO onVisitorCountChangedChannel;
