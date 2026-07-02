@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!29 &1
 OcclusionCullingSettings:
@@ -1964,7 +1964,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40d8f524add77234cb8f8a34bc3e8d1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onNewDayStartChannel: {fileID: 0}
+  onNewDayStartChannel: {fileID: 11400000, guid: b65aa56b6277890468cc2f1c78cf5702, type: 2}
   onDayEndedChannel: {fileID: 11400000, guid: 64ae5f3c66a07134fbd9036ad8eb8407, type: 2}
   urgentWindowMinutes: 60
   planningColor: {r: 0.4, g: 0.7, b: 1, a: 1}
@@ -2475,7 +2475,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 70.3
+  field of view: 72.9
   orthographic: 0
   orthographic size: 10
   m_Depth: 0
@@ -2534,7 +2534,7 @@ Transform:
   m_GameObject: {fileID: 1594643313}
   serializedVersion: 2
   m_LocalRotation: {x: 0.38268343, y: -0, z: -0, w: 0.92387956}
-  m_LocalPosition: {x: 71.35, y: 8.335, z: 17.21}
+  m_LocalPosition: {x: 71.35, y: 10.195, z: 17.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2572,6 +2572,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   globalMatrix: {fileID: 11400000, guid: 7c2f4ac15b58d644b92d03f5326e8d1b, type: 2}
   habitatSet: {fileID: 11400000, guid: dd604f8465befa8429bb2dc30458bce0, type: 2}
+  pathConfig: {fileID: 11400000, guid: c48e88297587eb944b58b204ebdf36f1, type: 2}
 --- !u!4 &1813116293
 Transform:
   m_ObjectHideFlags: 0
@@ -2766,7 +2767,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 70.3
+    FieldOfView: 72.9
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -2794,7 +2795,7 @@ Transform:
   m_GameObject: {fileID: 1874243017}
   serializedVersion: 2
   m_LocalRotation: {x: 0.38268343, y: -0, z: -0, w: 0.92387956}
-  m_LocalPosition: {x: 71.35, y: 8.335, z: 17.21}
+  m_LocalPosition: {x: 71.35, y: 10.195, z: 17.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2818,7 +2819,7 @@ MonoBehaviour:
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
-  FollowOffset: {x: 0, y: 7.13, z: -8.78}
+  FollowOffset: {x: 0, y: 8.99, z: -8.6}
 --- !u!1 &1907242073
 GameObject:
   m_ObjectHideFlags: 0

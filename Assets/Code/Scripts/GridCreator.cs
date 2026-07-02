@@ -50,9 +50,17 @@ public class GridCreator : MonoBehaviour
     }
     public Vector2 GetGridPosition()
     {
-        Vector3 worldPos = GetMouseWorldPosition();
-        Vector2 gridPosition = new Vector2(Mathf.FloorToInt(worldPos.x / cellSize), Mathf.FloorToInt(worldPos.z / cellSize));
-        return gridPosition;
+        return WorldToGridPosition(GetMouseWorldPosition());
+    }
+
+    public Vector2 WorldToGridPosition(Vector3 worldPos)
+    {
+        return new Vector2(Mathf.FloorToInt(worldPos.x / cellSize), Mathf.FloorToInt(worldPos.z / cellSize));
+    }
+
+    public bool IsInBounds(Vector2 gridPosition)
+    {
+        return gridPosition.x >= 0 && gridPosition.y >= 0 && gridPosition.x < width && gridPosition.y < height;
     }
 
     public bool IsGridOccupied(Vector2 gridPosition)
