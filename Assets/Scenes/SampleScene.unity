@@ -1911,6 +1911,7 @@ GameObject:
   - component: {fileID: 1230763510}
   - component: {fileID: 1230763511}
   - component: {fileID: 1230763512}
+  - component: {fileID: 1230763513}
   m_Layer: 0
   m_Name: PlayerHUD
   m_TagString: Untagged
@@ -1959,7 +1960,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230763506}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 40d8f524add77234cb8f8a34bc3e8d1a, type: 3}
   m_Name: 
@@ -1981,7 +1982,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230763506}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e008564dd47f344f8b98b62a4eaf9ce, type: 3}
   m_Name: 
@@ -1996,7 +1997,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230763506}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0f54b8e725ab5c40929603ce624de4f, type: 3}
   m_Name: 
@@ -2010,12 +2011,25 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230763506}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0285b9a1eb52bf44bd5564bfe2dab77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   onDemoEndedChannel: {fileID: 11400000, guid: 9b221bdc60db685458d4aebd7f24593c, type: 2}
+--- !u!114 &1230763513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230763506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 381e0b368ea0e4bcb808289af14b0930, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onNewDayStartChannel: {fileID: 11400000, guid: b65aa56b6277890468cc2f1c78cf5702, type: 2}
 --- !u!1 &1250398796
 GameObject:
   m_ObjectHideFlags: 0

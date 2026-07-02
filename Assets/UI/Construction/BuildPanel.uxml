@@ -12,7 +12,7 @@
 
             <ui:Label name="lbl-grid-size" text="0 x | 0 y" style="color: white; font-size: 13px; -unity-font-style: bold; align-self: flex-end; margin-bottom: 4px;" />
 
-            <ui:VisualElement name="categories-shop" style="flex-direction: row; margin-bottom: 5px;">
+            <ui:VisualElement name="categories-shop" style="flex-direction: row; flex-wrap: wrap; margin-bottom: 5px;">
                 <ui:Button name="btn-tab-habitats" text="Habitats" style="height: 35px; padding-left: 16px; padding-right: 16px; color: rgba(140,140,140,1); font-size: 12px; -unity-font-style: bold; background-color: rgba(30,30,30,0.9); border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-width: 0;" />
                 <ui:Button name="btn-tab-animals" text="Animals" style="height: 35px; padding-left: 16px; padding-right: 16px; color: rgba(140,140,140,1); font-size: 12px; -unity-font-style: bold; background-color: rgba(30,30,30,0.9); border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-width: 0; margin-left: 4px;" />
                 <ui:Button name="btn-tab-decorations" text="Decorations" style="height: 35px; padding-left: 16px; padding-right: 16px; color: rgba(140,140,140,1); font-size: 12px; -unity-font-style: bold; background-color: rgba(30,30,30,0.9); border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-width: 0; margin-left: 4px;" />

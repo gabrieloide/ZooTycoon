@@ -8,6 +8,7 @@ namespace ZooTycoon.Core
         public float income;
         public float buildExpenses;
         public float maintenance;
+        public float rent;
         public float disasterLosses;
         public float net;
     }
@@ -69,6 +70,10 @@ namespace ZooTycoon.Core
         }
 
         public bool CanAfford(float cost) => Capital >= cost;
+
+        public float GetProjectedDailyRent() => CalculateDailyRent();
+        public float GetProjectedMaintenanceCost() => CalculateMaintenanceCost();
+        public float GetDailyBreakeven() => CalculateDailyRent() + CalculateMaintenanceCost();
 
         public void LoadState(float capital, float loanDebt)
         {
@@ -140,13 +145,17 @@ namespace ZooTycoon.Core
             float maintenance = CalculateMaintenanceCost();
             if (maintenance > 0f) Spend(maintenance);
 
-            float pureConstruction = dailyBuildExpenses - maintenance - dailyDisasterLosses;
+            float rent = CalculateDailyRent();
+            if (rent > 0f) Spend(rent);
+
+            float pureConstruction = dailyBuildExpenses - maintenance - rent - dailyDisasterLosses;
 
             pendingSummary = new DailySummaryData
             {
                 income = dailyIncome,
                 buildExpenses = Mathf.Max(0f, pureConstruction),
                 maintenance = maintenance,
+                rent = rent,
                 disasterLosses = dailyDisasterLosses,
                 net = dailyIncome - dailyBuildExpenses
             };
@@ -159,6 +168,13 @@ namespace ZooTycoon.Core
                 if (habitat != null && habitat.biome != null)
                     total += habitat.biome.dailyMaintenanceCost * habitat.GetTotalTiles();
             return total;
+        }
+
+        private float CalculateDailyRent()
+        {
+            if (config == null) return 0f;
+            int day = TimeManager.Instance != null ? TimeManager.Instance.GetCurrentDay() : 0;
+            return config.dailyRentBase + config.dailyRentGrowthPerDay * day;
         }
     }
 }

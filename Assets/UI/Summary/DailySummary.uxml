@@ -13,6 +13,7 @@
             border-color: rgba(255,255,255,0.12);
             padding: 32px 40px;
             width: 460px;
+            max-width: 90%;
             min-height: 360px;
         ">
             <ui:Label name="lbl-summary-title" text="END OF DAY REPORT" style="
@@ -51,6 +52,11 @@
             <ui:VisualElement name="row-disaster" class="summary-row" style="flex-direction: row; justify-content: space-between; margin-bottom: 10px;">
                 <ui:Label text="Disaster Losses" style="color: rgba(255,255,255,0.65); font-size: 14px;"/>
                 <ui:Label name="lbl-disaster" text="-$0" style="color: rgb(220,80,80); font-size: 14px; -unity-font-style: bold;"/>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="row-rent" class="summary-row" style="flex-direction: row; justify-content: space-between; margin-bottom: 10px;">
+                <ui:Label text="Office Rent" style="color: rgba(255,255,255,0.65); font-size: 14px;"/>
+                <ui:Label name="lbl-rent" text="-$0" style="color: rgb(220,120,120); font-size: 14px; -unity-font-style: bold;"/>
             </ui:VisualElement>
 
             <ui:VisualElement style="height: 1px; background-color: rgba(255,255,255,0.1); margin-top: 10px; margin-bottom: 16px;"/>

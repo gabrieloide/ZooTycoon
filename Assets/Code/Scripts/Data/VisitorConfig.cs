@@ -18,5 +18,9 @@ namespace ZooTycoon.Data
         public float fleeRadius = 5f;
         public float fleeSpeedMultiplier = 1.6f;
         public float fleeDuration = 3f;
+
+        [Header("Growth Quota")]
+        public int visitorQuotaBase = 12;
+        public int visitorQuotaGrowthPerDay = 4;
     }
 }

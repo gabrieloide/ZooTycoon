@@ -21,6 +21,7 @@ public class DailySummary : MonoBehaviour
     private Label lblBuild;
     private Label lblMaint;
     private Label lblDisaster;
+    private Label lblRent;
     private Label lblNet;
     private Button btnNextDay;
 
@@ -50,6 +51,7 @@ public class DailySummary : MonoBehaviour
         lblBuild    = screenSummary.Q<Label>("lbl-build");
         lblMaint    = screenSummary.Q<Label>("lbl-maint");
         lblDisaster = screenSummary.Q<Label>("lbl-disaster");
+        lblRent     = screenSummary.Q<Label>("lbl-rent");
         lblNet      = screenSummary.Q<Label>("lbl-net");
         btnNextDay  = screenSummary.Q<Button>("btn-next-day");
 
@@ -139,6 +141,7 @@ public class DailySummary : MonoBehaviour
         if (lblBuild != null) lblBuild.text = $"-${Mathf.RoundToInt(data.buildExpenses)}";
         if (lblMaint != null) lblMaint.text = $"-${Mathf.RoundToInt(data.maintenance)}";
         if (lblDisaster != null) lblDisaster.text = $"-${Mathf.RoundToInt(data.disasterLosses)}";
+        if (lblRent != null) lblRent.text = $"-${Mathf.RoundToInt(data.rent)}";
 
         if (lblNet != null)
         {

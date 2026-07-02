@@ -42,6 +42,9 @@ public class TimeManager : MonoBehaviour
     private bool workDayEndFired;
     private bool dayEndedFired;
 
+    private bool dayRunning;
+    public bool IsDayRunning => dayRunning;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -55,11 +58,13 @@ public class TimeManager : MonoBehaviour
 
     private void Update()
     {
-        currentTime += Time.deltaTime;
+        if (dayRunning) currentTime += Time.deltaTime;
         CheckWorkDay();
     }
 
     public int GetCurrentDay() => currentDay;
+
+    public void BeginDay() => dayRunning = true;
 
     public Vector2Int GetCurrentTimeInDay()
     {
@@ -80,6 +85,7 @@ public class TimeManager : MonoBehaviour
     {
         currentDay = day;
         currentTime = 0f;
+        dayRunning = false;
         ResetEventFlags();
     }
 
@@ -87,6 +93,7 @@ public class TimeManager : MonoBehaviour
     {
         ResetEventFlags();
         currentDay++;
+        dayRunning = false;
 
         if (skipToWorkStart)
         {
@@ -97,6 +104,7 @@ public class TimeManager : MonoBehaviour
             float workProgress = (float)(workStartTotal - startTotal) / (endTotal - startTotal);
             currentTime = dayTotalSeconds * workProgress;
             newDayStartFired = true;
+            onNewDayStart?.Raise();
         }
         else
         {

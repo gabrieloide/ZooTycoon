@@ -284,8 +284,9 @@ namespace ZooTycoon.UI
 
         private void UpdateVisitorDisplay(int visitors)
         {
-            if (lblVisitors != null)
-                lblVisitors.text = $"Visitors: {visitors}";
+            if (lblVisitors == null) return;
+            int quota = VisitorManager.Instance != null ? VisitorManager.Instance.GetVisitorQuota() : 0;
+            lblVisitors.text = $"Visitors: {visitors}/{quota}";
         }
 
         private void UpdateModeUI()
@@ -405,12 +406,38 @@ namespace ZooTycoon.UI
                 return;
             }
 
-            foreach (var data in AnimalManager.Instance.GetAnimalDataList())
+            var unlockedBiomes = LicenseManager.Instance != null
+                ? LicenseManager.Instance.GetUnlockedBiomes()
+                : new List<BiomeDefinition>();
+
+            var availableAnimals = AnimalManager.Instance.GetAnimalDataList()
+                .FindAll(data => data != null && unlockedBiomes.Contains(data.requiredBiome));
+
+            if (availableAnimals.Count == 0)
             {
-                if (data == null) continue;
+                var empty = new Label("No animals unlocked. Purchase a biome license first.");
+                empty.style.color = Color.gray;
+                empty.style.whiteSpace = WhiteSpace.Normal;
+                empty.style.alignSelf = Align.Center;
+                empty.style.marginTop = 20;
+                shopContent.Add(empty);
+                return;
+            }
+
+            foreach (var data in availableAnimals)
+            {
                 var btn = CreateShopButton(data.displayName, $"${data.purchaseCost}", data.description);
                 if (selectedAnimalData == data)
                     btn.style.backgroundColor = new Color(0.2f, 0.6f, 0.2f);
+
+                if (data.requiredBiome != null)
+                {
+                    var lblBiome = new Label(data.requiredBiome.displayName);
+                    lblBiome.style.color = new Color(0.55f, 0.75f, 0.95f);
+                    lblBiome.style.fontSize = 9;
+                    lblBiome.style.unityTextAlign = TextAnchor.MiddleCenter;
+                    btn.Add(lblBiome);
+                }
 
                 var captured = data;
                 btn.clicked += () => OnAnimalSelected(captured);

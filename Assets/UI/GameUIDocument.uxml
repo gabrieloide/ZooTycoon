@@ -3,10 +3,12 @@
     <ui:Template name="BuildPanel" src="project://database/Assets/UI/Construction/BuildPanel.uxml?fileID=9197481963319205126&amp;guid=b90b73642bd4b9449a936910173a7493&amp;type=3#BuildPanel" />
     <ui:Template name="OfficeScreen" src="project://database/Assets/UI/Office/OfficeScreen.uxml?fileID=9197481963319205126&amp;guid=e23fa72251d7aea448c14dd3899133e8&amp;type=3#OfficeScreen" />
     <ui:Template name="DailySummary" src="project://database/Assets/UI/Summary/DailySummary.uxml?fileID=9197481963319205126&amp;guid=bb6a6c11844f780489dc6203e04af5e0&amp;type=3#DailySummary" />
+    <ui:Template name="DayStartScreen" src="DayStart/DayStartScreen.uxml" />
     <ui:VisualElement name="ui-root" style="width: 100%; height: 100%; position: absolute;">
         <ui:Instance template="MainHUD" name="hud-main" enabled="true" style="position: absolute; width: 100%; height: 100%;" />
         <ui:Instance template="BuildPanel" name="screen-build" style="position: absolute; width: 100%; height: 100%;" />
         <ui:Instance template="OfficeScreen" name="screen-office" style="position: absolute; width: 100%; height: 100%; display: none;" />
         <ui:Instance template="DailySummary" name="screen-summary" style="position: absolute; width: 100%; height: 100%; display: none;" />
+        <ui:Instance template="DayStartScreen" name="screen-day-start" style="position: absolute; width: 100%; height: 100%; display: none;" />
     </ui:VisualElement>
 </ui:UXML>

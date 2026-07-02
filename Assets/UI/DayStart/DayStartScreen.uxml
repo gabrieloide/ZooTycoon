@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+>
+    <ui:VisualElement name="daystart-backdrop" style="width: 100%; height: 100%; background-color: rgba(0,0,0,0.75); align-items: center; justify-content: center;">
+
+        <ui:VisualElement name="daystart-card" style="
+            background-color: rgb(18,18,22);
+            border-radius: 12px;
+            border-width: 1px;
+            border-color: rgba(255,255,255,0.12);
+            padding: 32px 40px;
+            width: 460px;
+            max-width: 90%;
+            min-height: 300px;
+        ">
+            <ui:Label name="lbl-daystart-title" text="PLANNING PHASE" style="
+                color: rgba(255,255,255,0.5);
+                font-size: 11px;
+                -unity-font-style: bold;
+                letter-spacing: 2px;
+                margin-bottom: 4px;
+                -unity-text-align: upper-center;
+            "/>
+            <ui:Label name="lbl-daystart-day" text="DAY 1" style="
+                color: white;
+                font-size: 26px;
+                -unity-font-style: bold;
+                -unity-text-align: upper-center;
+                margin-bottom: 24px;
+            "/>
+
+            <ui:VisualElement name="daystart-divider" style="height: 1px; background-color: rgba(255,255,255,0.1); margin-bottom: 20px;"/>
+
+            <ui:VisualElement name="row-breakeven" class="daystart-row" style="flex-direction: row; justify-content: space-between; margin-bottom: 10px;">
+                <ui:Label text="Minimum to Break Even" style="color: rgba(255,255,255,0.65); font-size: 14px;"/>
+                <ui:Label name="lbl-daystart-breakeven" text="$0" style="color: rgb(255,210,120); font-size: 14px; -unity-font-style: bold;"/>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="row-quota" class="daystart-row" style="flex-direction: row; justify-content: space-between; margin-bottom: 10px;">
+                <ui:Label text="Visitor Quota" style="color: rgba(255,255,255,0.65); font-size: 14px;"/>
+                <ui:Label name="lbl-daystart-quota" text="0 visitors" style="color: rgb(180,220,255); font-size: 14px; -unity-font-style: bold;"/>
+            </ui:VisualElement>
+
+            <ui:VisualElement style="height: 1px; background-color: rgba(255,255,255,0.1); margin-top: 10px; margin-bottom: 24px;"/>
+
+            <ui:Label text="Rent and maintenance are charged even on quiet days. Build, sign licenses, and plan while the zoo is closed." style="
+                color: rgba(255,255,255,0.45);
+                font-size: 11px;
+                white-space: normal;
+                margin-bottom: 24px;
+            "/>
+
+            <ui:Button name="btn-start-day" text="START DAY" style="
+                height: 44px;
+                background-color: rgb(255,255,255);
+                color: rgb(10,10,10);
+                font-size: 13px;
+                -unity-font-style: bold;
+                border-radius: 6px;
+                border-width: 0px;
+            "/>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

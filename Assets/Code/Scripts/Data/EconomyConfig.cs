@@ -11,5 +11,9 @@ namespace ZooTycoon.Data
 
         [Header("Income")]
         public int baseTicketPrice = 50;
+
+        [Header("Office Rent")]
+        public float dailyRentBase = 100f;
+        public float dailyRentGrowthPerDay = 30f;
     }
 }

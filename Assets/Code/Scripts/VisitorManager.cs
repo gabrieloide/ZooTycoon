@@ -23,6 +23,13 @@ public class VisitorManager : MonoBehaviour
 
     public int CurrentVisitors => currentVisitors;
 
+    public int GetVisitorQuota()
+    {
+        if (visitorConfig == null) return 0;
+        int day = TimeManager.Instance != null ? TimeManager.Instance.GetCurrentDay() : 0;
+        return visitorConfig.visitorQuotaBase + visitorConfig.visitorQuotaGrowthPerDay * day;
+    }
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
