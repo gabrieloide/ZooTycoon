@@ -38,6 +38,11 @@ namespace ZooTycoon.Data
         public float chaseSpeed = 3.5f;
         public float chaseDetectionRadius = 8f;
 
+        [Header("Escape Recovery")]
+        public float postRecaptureGraceDuration = 15f;
+        public float traumaStressRatePerEscape = 0.25f;
+        public int wildAfterEscapeCount = 2;
+
         [Header("Interaction")]
         public float interactionRadius = 2f;
         public float calmStressReduction = 30f;

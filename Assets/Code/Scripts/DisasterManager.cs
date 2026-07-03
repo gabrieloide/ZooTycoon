@@ -7,6 +7,7 @@ public class DisasterManager : MonoBehaviour
 
     [SerializeField] private float escapePenalty = 500f;
     [SerializeField] private int visitorsLostOnEscape = 5;
+    [SerializeField, Range(0f, 1f)] private float recaptureVisitorRecoveryRate = 0.5f;
 
     private void Awake()
     {
@@ -47,6 +48,9 @@ public class DisasterManager : MonoBehaviour
         Debug.Log($"[Disaster] {animal.data?.displayName ?? animal.name} recaptured.");
 
         if (VisitorManager.Instance != null)
-            VisitorManager.Instance.RemoveEscapePenalty(visitorsLostOnEscape);
+        {
+            int recovered = Mathf.RoundToInt(visitorsLostOnEscape * recaptureVisitorRecoveryRate);
+            VisitorManager.Instance.RemoveEscapePenalty(recovered);
+        }
     }
 }

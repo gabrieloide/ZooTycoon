@@ -76,7 +76,17 @@ public class SellController : MonoBehaviour
     private void SellAnimal(Animal animal)
     {
         float refund = animal.GetSellRefund(config.staledRefundRate);
-        animal.habitat?.RemoveAnimal(animal);
+
+        if (animal.habitat != null)
+        {
+            animal.habitat.RemoveAnimal(animal);
+        }
+        else
+        {
+            if (animal.isQuarantined) QuarantineManager.Instance?.Release(animal);
+            Destroy(animal.gameObject);
+        }
+
         if (EconomyManager.Instance != null) EconomyManager.Instance.Earn(refund);
     }
 

@@ -1,9 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AnimalWandering : MonoBehaviour
 {
     private Animal animal;
+    private bool hasExitedHabitat;
 
     private void Awake() => animal = GetComponent<Animal>();
 
@@ -25,6 +27,8 @@ public class AnimalWandering : MonoBehaviour
                 continue;
             }
 
+            hasExitedHabitat = false;
+
             float speed = animal.data.wanderSpeed * Random.Range(1f - animal.data.wanderSpeedVariance, 1f + animal.data.wanderSpeedVariance);
             yield return MoveTo(PickHabitatTarget(), speed);
             yield return IdleLook(Random.Range(animal.data.wanderPauseMin, animal.data.wanderPauseMax));
@@ -33,15 +37,66 @@ public class AnimalWandering : MonoBehaviour
 
     private IEnumerator EscapedStep()
     {
-        VisitorNPC target = FindNearestVisitor();
-        if (target == null)
+        if (!hasExitedHabitat)
         {
-            yield return MoveTo(PickFreeRoamTarget(), animal.data.wanderSpeed);
+            yield return ExitThroughFence();
+            hasExitedHabitat = true;
+            yield break;
+        }
+
+        VisitorNPC target = FindNearestVisitor();
+        if (target != null)
+        {
+            yield return Chase(target);
+            yield break;
+        }
+
+        yield return FollowPathNetwork();
+    }
+
+    private IEnumerator ExitThroughFence()
+    {
+        Vector3? exitPoint = animal.habitat != null ? animal.habitat.GetEscapeExitPoint() : null;
+        if (exitPoint.HasValue)
+            yield return MoveTo(exitPoint.Value, animal.data.chaseSpeed);
+    }
+
+    private IEnumerator FollowPathNetwork()
+    {
+        var start = PathManager.NearestCell(transform.position);
+        var allCells = new List<Vector2>(PathManager.GetAll());
+        if (!start.HasValue || allCells.Count == 0)
+        {
+            yield return MoveTo(PickFreeRoamTarget(), animal.data.chaseSpeed);
             yield return new WaitForSeconds(Random.Range(animal.data.wanderPauseMin, animal.data.wanderPauseMax));
             yield break;
         }
 
-        yield return Chase(target);
+        Vector2 destination = allCells[Random.Range(0, allCells.Count)];
+        var route = PathManager.FindPath(start.Value, destination);
+        if (route == null)
+        {
+            yield return new WaitForSeconds(0.5f);
+            yield break;
+        }
+
+        var gridCreator = GridCreator.Instance;
+        if (gridCreator == null) yield break;
+
+        foreach (var cell in route)
+        {
+            if (!animal.hasEscaped) yield break;
+
+            VisitorNPC nearby = FindNearestVisitor();
+            if (nearby != null)
+            {
+                yield return Chase(nearby);
+                yield break;
+            }
+
+            Vector3 target = gridCreator.GetCellWorldPosition(cell);
+            yield return MoveTo(target, animal.data.chaseSpeed);
+        }
     }
 
     private VisitorNPC FindNearestVisitor()

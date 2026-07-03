@@ -80,6 +80,20 @@ public class HabitatSpace : MonoBehaviour
         if (renderer != null) renderer.material.color = new Color(0.3f, 0.2f, 0.1f);
     }
 
+    public Vector3? GetEscapeExitPoint()
+    {
+        if (brokenFence == null) return null;
+
+        float cellSize = GridCreator.Instance != null ? GridCreator.Instance.cellSize : 1f;
+        Vector3 fencePos = brokenFence.transform.position;
+        Vector3 dir = fencePos - GetWorldCenter();
+        dir.y = 0f;
+        if (dir.sqrMagnitude < 0.001f) return fencePos;
+
+        dir.Normalize();
+        return fencePos + dir * cellSize;
+    }
+
     public void RepairFence()
     {
         if (brokenFence == null) return;
@@ -132,6 +146,15 @@ public class HabitatSpace : MonoBehaviour
             animals.Remove(animal);
             currentOcupation = animals.Count;
             Destroy(animal.gameObject);
+            UpdateTemperament();
+        }
+    }
+
+    public void RemoveAnimalKeepAlive(Animal animal)
+    {
+        if (animals.Remove(animal))
+        {
+            currentOcupation = animals.Count;
             UpdateTemperament();
         }
     }
@@ -192,8 +215,27 @@ public class HabitatSpace : MonoBehaviour
         }
 
         totalTension += cachedNeighborTension;
+        totalTension += CalculateEscapePanicTension();
 
         return totalTension;
+    }
+
+    private float CalculateEscapePanicTension()
+    {
+        if (globalMatrix == null || globalMatrix.escapePanicRadius <= 0f) return 0f;
+
+        float panic = 0f;
+        Vector3 center = GetWorldCenter();
+        float radius = globalMatrix.escapePanicRadius;
+
+        foreach (var escaped in Animal.EscapedAnimals)
+        {
+            if (escaped == null) continue;
+            if (Vector3.Distance(center, escaped.transform.position) <= radius)
+                panic += globalMatrix.escapePanicTensionPerAnimal;
+        }
+
+        return panic;
     }
 
     public void RefreshNeighborTension()

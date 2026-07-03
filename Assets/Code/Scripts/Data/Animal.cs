@@ -10,6 +10,10 @@ public class Animal : MonoBehaviour
 
     public float currentAnnoyance;
     public bool hasEscaped;
+    public int escapeCount;
+    public bool isQuarantined;
+
+    private float recaptureGraceTimer;
 
     [HideInInspector] public float purchaseCost;
     [HideInInspector] public int buildSession;
@@ -36,14 +40,22 @@ public class Animal : MonoBehaviour
     {
         if (habitat == null || data == null) return;
 
+        if (recaptureGraceTimer > 0f)
+        {
+            recaptureGraceTimer -= Time.deltaTime;
+            currentAnnoyance = Mathf.Max(0f, currentAnnoyance - data.annoyanceCalmRate * Time.deltaTime);
+            return;
+        }
+
+        float traumaMultiplier = 1f + escapeCount * data.traumaStressRatePerEscape;
         float stress = 0f;
 
         if (data.requiredBiome != null && habitat.biome != null && habitat.biome != data.requiredBiome)
-            stress += data.wrongBiomeStressRate;
+            stress += data.wrongBiomeStressRate * traumaMultiplier;
 
         float tension = habitat.CalculateCurrentTension();
         if (tension > 0f)
-            stress += tension * data.stressAccumulationRate;
+            stress += tension * data.stressAccumulationRate * traumaMultiplier;
 
         if (stress > 0f)
             currentAnnoyance += stress * Time.deltaTime;
@@ -59,6 +71,7 @@ public class Animal : MonoBehaviour
     private void TriggerEscape()
     {
         hasEscaped = true;
+        escapeCount++;
         transform.SetParent(null);
         habitat?.BreakFence();
         escapedAnimals.Add(this);
@@ -69,15 +82,24 @@ public class Animal : MonoBehaviour
     {
         currentAnnoyance = 0f;
         hasEscaped = false;
+        recaptureGraceTimer = data != null ? data.postRecaptureGraceDuration : 0f;
         escapedAnimals.Remove(this);
-        if (habitat != null)
-        {
-            transform.SetParent(habitat.transform);
-            transform.position = GetHabitatWorldCenter();
-            if (!habitat.HasEscapedAnimals())
-                habitat.RepairFence();
-        }
+
+        if (data != null && escapeCount >= data.wildAfterEscapeCount)
+            QuarantineManager.Instance?.SendToQuarantine(this);
+        else
+            ReturnToHabitat();
+
         OnAnimalRecaptured?.Invoke(this);
+    }
+
+    private void ReturnToHabitat()
+    {
+        if (habitat == null) return;
+        transform.SetParent(habitat.transform);
+        transform.position = GetHabitatWorldCenter();
+        if (!habitat.HasEscapedAnimals())
+            habitat.RepairFence();
     }
 
     private void OnDestroy()

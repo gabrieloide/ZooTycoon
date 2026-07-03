@@ -38,6 +38,10 @@ namespace ZooTycoon.Data
         public int neighborInfluenceRadius = 4;
         public List<BiomeConflict> biomeConflicts = new();
 
+        [Header("Escape Panic (Domino Effect)")]
+        public float escapePanicRadius = 6f;
+        public float escapePanicTensionPerAnimal = 20f;
+
         public float GetTension(AnimalFamily a, AnimalFamily b)
         {
             if (a == b) return 0f;
